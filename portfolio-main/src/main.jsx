@@ -1,9 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import App from './App.jsx'
+import App from './App.jsx';
 
 // Pages
+import Home from './pages/Home/Home.jsx';
+import Portfolio from './pages/Portfolio/Portfolio.jsx';
+import Resume from './pages/Resume/Resume.jsx';
+import Contact from './pages/Contact/Contact.jsx';
 
 // Routers
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -18,7 +22,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: '',
+        path: '/',
         element: <Home />
       },
       {
@@ -30,7 +34,7 @@ const router = createBrowserRouter([
         element: <Resume />
       },
       {
-        path: '/contant',
+        path: '/contact',
         element: <Contact />
       }
     ]
@@ -38,7 +42,5 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <RouterProvider router={router} />
 )
