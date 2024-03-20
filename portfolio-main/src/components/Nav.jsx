@@ -11,7 +11,7 @@ const Nav = () => {
         <Link to='/resume'>Resume</Link>
         <Link to='/contact'>Contact Me</Link>
       </nav>
-      </header>
+    </header>
   )
 }
 

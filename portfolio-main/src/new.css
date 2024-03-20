@@ -1,0 +1,10 @@
+.full-page {
+  min-height: 90vh;
+}
+
+Link a {
+  padding: 0 20px;
+  text-decoration: none;
+  text-align: center;
+  color: var(--text);
+}

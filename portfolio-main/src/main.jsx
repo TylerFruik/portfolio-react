@@ -13,9 +13,9 @@ import Contact from './pages/Contact/Contact.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // CSS
-import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './old.css'
+import './old.css';
+import './new.css';
 
 const router = createBrowserRouter([
   {

@@ -2,9 +2,9 @@ import React from 'react';
 
 const Foot = () => {
   return (
-    <>
-    <h1>Foot</h1>
-    </>
+    <footer>
+      <p>Last updated: 3/20/2024</p>
+    </footer>
   )
 }
 
