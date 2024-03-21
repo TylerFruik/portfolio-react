@@ -19,7 +19,7 @@ const ContactForm = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringift(formData)
+        body: JSON.stringify(formData)
       });
     } catch (error) {
       console.error('Error: ', error);
@@ -33,6 +33,7 @@ const ContactForm = () => {
         <div className='row'>
           <div className='col-md-5 m-2'>
             <input
+              className='text-dark'
               type='text'
               name='name'
               value={formData.name}
@@ -42,6 +43,7 @@ const ContactForm = () => {
           </div>
           <div className='col-md-5 m-2'>
             <input
+              className='text-dark'
               type='email'
               name='email'
               value={formData.email}
@@ -55,7 +57,7 @@ const ContactForm = () => {
     <div className='row h-50'>
       <div className='col-12 d-flex justify-content-center'>
         <textarea
-          className='col-6 h-100'
+          className='col-6 h-100 text-dark'
           name='message'
           value={formData.message}
           onChange={handleChange}

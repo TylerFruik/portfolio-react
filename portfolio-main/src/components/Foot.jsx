@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Foot = () => {
   return (
     <footer>
-        <div class="content" id="contact-me-content">
+        <div className="content" id="contact-me-content">
           <nav>
               <a href="https://github.com/TylerFruik" target="_blank">
                 <img className='mx-5 my-3' src="./public/images/GithubLogoGold.png" alt="" />
