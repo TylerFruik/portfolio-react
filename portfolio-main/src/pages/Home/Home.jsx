@@ -7,7 +7,7 @@ const Home = () => {
         <img className="profile-picture" src="./public/images/pfp.png" alt="Tyler Fruik's face"/>
         <h2>Updated weekly!</h2>
       </div>
-      <div className="container">
+      <div className="custom-container">
         <div className="segment">
           <div className="title">
             <h3>About</h3> 

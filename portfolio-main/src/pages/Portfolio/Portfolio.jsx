@@ -5,7 +5,7 @@ const Portfolio = () => {
     <div className='full-page'>
       <div className="segment">
         <div className="title">
-          <h3>Completed</h3>
+          <h3>Portfolio</h3>
           <h3>Projects</h3>
         </div>
         <div className= "content" id="completed-projects-content">
