@@ -218,8 +218,8 @@ header h1 {
 } */
 /* #endregion */
 
-/* * CONACT ME *//* #region */
-#contact-me-content {
+/* ! CONACT ME *//* #region */
+/* #contact-me-content {
   display: flex;
   bottom: 5px;
   right: 10px;
@@ -241,7 +241,7 @@ header h1 {
   border-bottom: 5px solid var(--tertiary);
   color: var(--text);
   padding: 10px;
-}
+} */
 /* #endregion */
 
 /* ! FOOTER  */ /* #region */
