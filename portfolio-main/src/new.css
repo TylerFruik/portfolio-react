@@ -1,5 +1,9 @@
+a {
+  color: var(--text);
+}
+
 .full-page {
-  min-height: 90vh;
+  min-height: 65vh;
 }
 
 Link a {
@@ -8,3 +12,157 @@ Link a {
   text-align: center;
   color: var(--text);
 }
+
+/* * CONTAINER *//* #region */
+.container {
+  display: flex;
+  flex-flow: column wrap;
+  width: 100%;
+  padding-right: 4%;
+  text-align: justify;
+}
+
+.segment {
+  display: flex;
+  flex-flow: row nowrap;
+  margin: 5px;
+}
+
+.title {
+  display: block;
+  flex: 10%;
+  padding-right: 1%;
+  margin: 2%;
+  border-right: 5px solid var(--tertiary);
+}
+
+.title h3 {
+  padding: 2%;
+  text-align: right;
+  font-size: 300%;
+  color: var(--tertiary);
+}
+
+.content {
+  display: flex;
+  flex: 90%;
+  align-items: center;
+  margin: 10px;
+  padding: 20px;
+}
+/* #endregion */
+
+/* * COMPLETED PROJECTS *//* #region */
+#completed-projects-content {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.first-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+#first-row-smaller {
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+#first-row-smaller a {
+  width: 49%;
+  margin: 1% 0;
+}
+
+#first-row-smaller img {
+  width: 100%;
+}
+
+#featured,
+#first-row-smaller {
+  flex: 1;
+  max-width: calc(50% - 10px);
+}
+
+#featured a {
+  width: 100%;
+  margin: 1% 0;
+  padding: 1% 0;
+}
+
+#featured img {
+  width: 100%;
+}
+
+#second-row-smaller {
+  flex: 100%;
+  justify-content: space-between;
+}
+
+#second-row-smaller a {
+  width: 24%;
+  margin: 0;
+}
+
+#second-row-smaller img {
+  width: 100%;
+}
+
+.project-links {
+  display: flex;
+  flex-flow: row wrap;
+  position: relative;
+  justify-content: center;
+  margin: 6px;
+}
+
+.project-links a {
+  border: 5px solid var(--tertiary);
+  transition: border 0.8s ease;
+  /* margin: 20px; */
+}
+
+.project-links img {
+  filter: blur(2px) grayscale(80%);
+  transition: filter 0.8s ease;
+  padding: 4px 4px 0px 4px;
+}
+
+.project-links h4 {
+  position: absolute;
+  bottom: 6%;
+  background-color: var(--tertiary);
+  font-size: 200%;
+  text-align: center;
+  transition: background-color 0.8s ease;
+  padding: 1%;
+}
+
+.project-links a:hover {
+  border: 5px solid var(--primary);
+}
+
+.project-links a:hover img {
+  filter: blur(0px) grayscale(0%);
+}
+
+.project-links a:hover h4 {
+  background-color: var(--primary);
+} 
+
+.smaller-link {
+  position: relative;
+}
+/* #endregion */
+
+.smaller-link h4 {
+  font-size: 100%;
+}
+
+/*  * RESUME *//* #region */
+.resume {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  align-items: center;
+}
+/* #endregion */
