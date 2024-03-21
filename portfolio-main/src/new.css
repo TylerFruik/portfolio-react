@@ -166,3 +166,11 @@ Link a {
   align-items: center;
 }
 /* #endregion */
+
+/*  * FOOTER *//* #region */
+footer {
+  margin-top: 1%;
+  height: 4px;
+  background-color: var(--tertiary);
+}
+/* #endregion */

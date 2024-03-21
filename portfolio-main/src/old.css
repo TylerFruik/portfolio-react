@@ -244,17 +244,7 @@ header h1 {
 }
 /* #endregion */
 
-/* * FOOTER  */ /* #region */
-footer {
-  margin-top: 2%;
-  background-color: var(--tertiary);
-}
-
-footer p {
-  filter: brightness(0.6);
-  text-align: center;
-  color: var(--tertiary);
-}
+/* ! FOOTER  */ /* #region */
 /* #endregion */
 
 /* * RESIZING 860px *//* #region */
