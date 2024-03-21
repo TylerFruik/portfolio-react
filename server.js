@@ -13,14 +13,14 @@ app.post('/send-email', async (req, res) => {
     let transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth:{
-        user: 'gbcxosrs1@gmail.com',
+        user: 'tylerfruik@gmail.com',
         pass: 'Test1ng123'
       }
     });
 
     let mailOptions = {
-      from: 'gbcxosrs1@gmail.com',
-      to: 'tylerfruik@gmail.com',
+      from: 'tylerfruik@gmail.com',
+      to: 'gbcxosrs1@gmail.com',
       subject: '!!PORTFOLIO MESSAGE',
       text: `
         Name: ${name}
