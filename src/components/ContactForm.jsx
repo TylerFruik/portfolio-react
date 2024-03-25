@@ -9,9 +9,11 @@ const ContactForm = () => {
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log('test1')
   };
 
   const handleSubmit = async e => {
+    console.log('test2')
     e.preventDefault();
     try {
       const response = await fetch('/send-email', {
@@ -21,6 +23,7 @@ const ContactForm = () => {
         },
         body: JSON.stringify(formData)
       });
+      console.log('test3')
     } catch (error) {
       console.error('Error: ', error);
     }
