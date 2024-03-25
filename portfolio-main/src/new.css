@@ -136,6 +136,7 @@ Link a {
   text-align: center;
   transition: background-color 0.8s ease;
   padding: 1%;
+  min-width: 60px;
 }
 
 .project-links a:hover {
