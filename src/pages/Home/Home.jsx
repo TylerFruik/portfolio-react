@@ -4,7 +4,7 @@ const Home = () => {
   return (
     <div className='full-page'>
       <div className="banner">
-        <img className="profile-picture" src="./public/images/pfp.png" alt="Tyler Fruik's face"/>
+        <img className="profile-picture" src="images/pfp.png" alt="Tyler Fruik's face"/>
         <h2>Updated weekly!</h2>
       </div>
       <div className="custom-container">
