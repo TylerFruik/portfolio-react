@@ -7,8 +7,9 @@ const Resume = () => {
         <div className="title">
           <h3>Resume</h3>
         </div>
-        <div className='resume'>
-          <h1>RESUME WILL BE ADDED AT A LATER DATE</h1>
+        <div className='resume vh-100 p-5'>
+          <iframe src="documents/Tyler Resume.pdf" title='Tyler Fruik Resume'
+          width='60%' height='100%'></iframe>
         </div>
       </div>
     </div>
