@@ -34,10 +34,10 @@ const router = createBrowserRouter([
         path: '/resume',
         element: <Resume />
       },
-      {
-        path: '/contact',
-        element: <Contact />
-      }
+      // {
+      //   path: '/contact',
+      //   element: <Contact />
+      // }
     ]
   }
 ]);
