@@ -20,9 +20,9 @@ const Nav = () => {
   return (
     <header>
       <h1>Tyler Fruik</h1>
-      <div id='date'>
+      {/* <div id='date'>
         Testing
-      </div>
+      </div> */}
       <nav className='navbar'>
         <Link to='/'>About Me</Link>
         <Link to='/portfolio'>Portfolio</Link>
