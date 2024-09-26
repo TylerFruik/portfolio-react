@@ -198,25 +198,39 @@ footer {
 #contact-me-content nav {
   display: flex;
   width: 100%;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#contact-me-content a img {
+#contact-me-content .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+#contact-me-content .nav-item img {
   width: 60px;
-  text-align: center;
+  margin-bottom: 10px;
   transition: 0.8s ease;
 }
 
-#contact-me-content a:hover img {
+#contact-me-content .nav-item:hover img {
   filter: hue-rotate(-31deg) saturate(500%) brightness(90%);
-} 
+}
 
-#contact-me-content h4 {
-  text-decoration: none;
+#contact-me-content .nav-item h4 {
   text-align: center;
   border-top: 5px solid var(--tertiary);
   color: var(--text);
   padding: 10px;
+  /* transition: 0.8s ease; */
+}
+
+.small-text {
+  font-size: 12px;
+  height: 54px;
 }
 
 .phone {

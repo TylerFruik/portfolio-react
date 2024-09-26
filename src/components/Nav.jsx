@@ -19,7 +19,9 @@ const Nav = () => {
 
   return (
     <header>
-      <h1>Tyler Fruik</h1>
+      <Link to='/'>
+        <h1>Tyler Fruik</h1>
+      </Link>
       {/* <div id='date'>
         Testing
       </div> */}
