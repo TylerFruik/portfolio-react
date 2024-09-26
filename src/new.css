@@ -14,7 +14,7 @@ Link a {
   color: var(--text);
 }
 
-/* * CONTAINER *//* #region */
+/* * PORTFOLIO *//* #region */
 .custom-container {
   display: flex;
   flex-flow: column wrap;
@@ -27,6 +27,16 @@ Link a {
   display: flex;
   flex-flow: row nowrap;
   margin: 5px;
+}
+
+span {
+  color: var(--primary);
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  flex: 100%
 }
 
 .title {

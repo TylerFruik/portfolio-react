@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+//  * Portfolio data object
+// #region
 const portfolioApps = {
   loveStruck : {
     name : 'loveStruck',
@@ -61,9 +63,10 @@ const portfolioApps = {
   //   tags: []
   // }
 }
+// #endregion
 
-const titleDeployed = ['Deployed', 'Websites'];
-const titleRepos = ['GitHub', 'Repos'];
+const titleDeployed = 'Deployed Websites';
+const titleRepos = 'GitHub Repos';
 
 const Portfolio = () => {
 
@@ -77,16 +80,21 @@ const Portfolio = () => {
       {showRepoLinks ? (
       <div className="segment">
         <div className="title">
-          <h3>{titleDeployed[0]}</h3>
-          <h3>{titleDeployed[1]}</h3>
-          <button
-            className='custom-btn p-2'
-            onClick={toggleDisplay}
-            >
-            {showRepoLinks ? titleRepos[0] : titleDeployed[0]}
-          </button>
+            <h3>Developer</h3>
+            <h3>Portfolio</h3>
         </div>
-        <div className= "content" id="completed-projects-content">
+        <div className="content" id="completed-projects-content">
+          <div className='portfolio-header'>
+            <div>
+              <h2>Click on any image below to see one of many <span>{titleDeployed}</span>!</h2>
+              <h3>To see their respective <span>{titleRepos}</span>, click the button on the right!</h3>
+            </div>
+            <button
+            className='custom-btn p-2 m-3'
+            onClick={toggleDisplay}
+            >Click here!
+            </button>
+          </div>
           <div className='first-row'>
             <div className="project-links" id="featured">
               <a href={portfolioApps.loveStruck.deployed} target="_blank">
@@ -136,18 +144,23 @@ const Portfolio = () => {
         </div>
       </div>
       ) : (
-        <div className="segment">
+      <div className="segment">
         <div className="title">
-          <h3>{titleRepos[0]}</h3>
-          <h3>{titleRepos[1]}</h3>
-          <button
-            className='custom-btn p-2'
-            onClick={toggleDisplay}
-            >
-            {showRepoLinks ? titleRepos[0] : titleDeployed[0]}
-          </button>
+          <h3>Developer</h3>
+          <h3>Portfolio</h3>
         </div>
         <div className= "content" id="completed-projects-content">
+          <div className='portfolio-header'>
+            <div>
+              <h2>Click on any image below to see one of many <span>{titleRepos}</span>!</h2>
+              <h3>To see their respective <span>{titleDeployed}</span>, click the button on the right!</h3>
+            </div>
+            <button
+            className='custom-btn p-2 m-3'
+            onClick={toggleDisplay}
+            >Click here!
+            </button>
+          </div>
           <div className='first-row'>
             <div className="project-links" id="featured">
               <a href={portfolioApps.loveStruck.repo} target="_blank">
