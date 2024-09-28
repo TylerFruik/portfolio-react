@@ -262,3 +262,69 @@ footer {
   border: 2px solid var(--text);
 }
 /* #endregion */
+
+/*  * Wave */
+/* #region */
+.wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave .shape-fill {
+  fill: var(--primary);
+  filter: brightness(95%);
+}
+
+.wave2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave2 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave2 .shape-fill {
+  fill: var(--primary);
+  filter: brightness(85%);
+}
+
+.wave3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave3 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave3 .shape-fill {
+  fill: var(--primary);
+  filter: brightness(105%);
+}
+/* #endregion */
