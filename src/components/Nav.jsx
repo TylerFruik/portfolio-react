@@ -35,7 +35,7 @@ const Nav = () => {
         </svg>
       </div>
       <Link to='/'>
-        <h1>Tyler Fruik</h1>
+        <h1>GBCxPrime</h1>
       </Link>
       {/* <div id='date'>
         Testing

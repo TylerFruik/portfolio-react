@@ -8,11 +8,11 @@ const Foot = () => {
   const [discordText, setDiscordText] = useState('Discord');
 
   const handleEmailClick = () => {
-    setEmailText(prevText => prevText === 'Email' ? 'tylerfruik@gmail.com' : 'Email');
+    setEmailText(prevText => prevText === 'Email' ? 'anonymous@email.com' : 'Email');
   };
 
   const handlePhoneClick = () => {
-    setPhoneText(prevText => prevText === 'Phone' ? '(715) 439-0345' : 'Phone');
+    setPhoneText(prevText => prevText === 'Phone' ? '(800) 272-9652' : 'Phone');
   };
 
   const handleDiscordClick = () => {
