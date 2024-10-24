@@ -58,6 +58,7 @@ span {
   display: flex;
   flex: 90%;
   align-items: center;
+  text-align: left;
   margin: 10px;
   padding: 20px;
 }
@@ -164,11 +165,12 @@ span {
 .smaller-link {
   position: relative;
 }
-/* #endregion */
 
 .smaller-link h4 {
   font-size: 100%;
 }
+
+/* #endregion */
 
 /*  * RESUME *//* #region */
 .resume {
@@ -247,6 +249,7 @@ footer {
   margin: 60px;
 }
 /* #endregion */
+
 /*  * BTN */ /* #region */
 .custom-btn {
   border: 2px solid var(--text);
@@ -263,8 +266,7 @@ footer {
 }
 /* #endregion */
 
-/*  * Wave */
-/* #region */
+/*  * Wave */ /* #region */
 .wave {
   position: absolute;
   top: 0;
@@ -327,4 +329,15 @@ footer {
   fill: var(--primary);
   filter: brightness(105%);
 }
+/* #endregion */
+
+/*  * ABOUT ME */ /* #region */
+.question {
+padding-bottom: 60px;
+}
+
+.question h4 {
+font-size: 30px;
+}
+
 /* #endregion */
