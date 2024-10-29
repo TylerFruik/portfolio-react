@@ -1,10 +1,26 @@
+/* * ROOT AND GLOBALS *//* #region */
+:root {
+  --primary: #EA6138; /*shirt sun orange */
+  --secondary: #261E20; /*shirt text*/
+  --tertiary: #EFBD51; /*shirt sun yellow */
+  --text: #FFF7EF; /*shirt background */
+  --temp: black;
+}
+
+* {
+  box-sizing: border-box;
+  color: var(--text)
+}
+
+body {
+  background-color: var(--secondary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+}
+
 a {
   color: var(--text);
   text-decoration: none;
-}
-
-.full-page {
-  min-height: 68vh;
 }
 
 Link a {
@@ -13,6 +29,181 @@ Link a {
   text-align: center;
   color: var(--text);
 }
+
+.full-page {
+  min-height: 68vh;
+}
+
+.custom-btn {
+  border: 2px solid var(--text);
+  background-color: var(--tertiary);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 6px 0px rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.8s ease;
+}
+
+.custom-btn:hover {
+  background-color: var(--primary);
+  border: 2px solid var(--text);
+}
+
+/* #endregion */
+
+/* * HEADER *//* #region */
+header {
+  background-color: var(--primary);
+  height: 150px;
+  position: relative;
+}
+
+header h1 {
+  display: inline-block;
+  position: absolute;
+  bottom: 10px;
+  background: var(--tertiary);
+  padding: 20px;
+  padding-left: 10%;
+  text-align: center;
+  font-size: 400%;
+}
+
+.navbar {
+  display: flex;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding-top: 15px;
+  margin-right: 20px;
+  font-size: 30px;
+}
+
+.navbar a {
+  padding: 0 20px;
+  text-decoration: none;
+  text-align: center;
+  color: var(--text);
+}
+/* #endregion */
+
+/* * ABOUT ME *//* #region */
+#about-me-content {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+}
+
+#about-me-content p {
+  display: flex;
+  margin: 10px;
+  font-size: 150%;
+}
+
+.question {
+  padding-bottom: 60px;
+}
+  
+.question h4 {
+  font-size: 30px;
+}
+
+/* #endregion */
+
+/*  * ABOUT ME WAVES */ /* #region */
+.wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave .shape-fill {
+  fill: var(--primary);
+  filter: brightness(95%);
+}
+
+.wave2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave2 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave2 .shape-fill {
+  fill: var(--primary);
+  filter: brightness(85%);
+}
+
+.wave3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.wave3 svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 144px;
+}
+
+.wave3 .shape-fill {
+  fill: var(--primary);
+  filter: brightness(105%);
+}
+/* #endregion */
+
+/* * ABOUT ME BANNER *//* #region */
+.banner {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background-color: var(--primary);
+  background-image: url('/images/Banner.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.profile-picture {
+  position: relative;
+  width: 380px;
+  height: 380px;
+  border: 2px solid var(--text);
+  margin: 10px;
+}
+
+.banner h2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: var(--tertiary);
+  padding: 5px;
+  margin: 20px 40px;
+  font-size: 48px;
+}
+/* #endregion */
 
 /* * PORTFOLIO *//* #region */
 .custom-container {
@@ -64,7 +255,7 @@ span {
 }
 /* #endregion */
 
-/* * COMPLETED PROJECTS *//* #region */
+/* * PORTFOLIO COMPLETED PROJECTS *//* #region */
 #completed-projects-content {
   display: flex;
   flex-flow: row wrap;
@@ -181,15 +372,6 @@ span {
 }
 /* #endregion */
 
-/*  * FORM *//* #region */
-.form {
-  width: 100%;
-  min-height: 68vh;
-  text-align: center;
-  align-items: center;
-}
-/* #endregion */
-
 /*  * FOOTER *//* #region */
 footer {
   margin: 0 4% 0 4%;
@@ -248,96 +430,4 @@ footer {
 .phone {
   margin: 60px;
 }
-/* #endregion */
-
-/*  * BTN */ /* #region */
-.custom-btn {
-  border: 2px solid var(--text);
-  background-color: var(--tertiary);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 6px 0px rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
-  color: var(--text);
-  cursor: pointer;
-  transition: background-color 0.8s ease;
-}
-
-.custom-btn:hover {
-  background-color: var(--primary);
-  border: 2px solid var(--text);
-}
-/* #endregion */
-
-/*  * Wave */ /* #region */
-.wave {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-}
-
-.wave svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 144px;
-}
-
-.wave .shape-fill {
-  fill: var(--primary);
-  filter: brightness(95%);
-}
-
-.wave2 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-}
-
-.wave2 svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 144px;
-}
-
-.wave2 .shape-fill {
-  fill: var(--primary);
-  filter: brightness(85%);
-}
-
-.wave3 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-}
-
-.wave3 svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 144px;
-}
-
-.wave3 .shape-fill {
-  fill: var(--primary);
-  filter: brightness(105%);
-}
-/* #endregion */
-
-/*  * ABOUT ME */ /* #region */
-.question {
-padding-bottom: 60px;
-}
-
-.question h4 {
-font-size: 30px;
-}
-
 /* #endregion */

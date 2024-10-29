@@ -7,15 +7,13 @@ import App from './App.jsx';
 import Home from './pages/Home/Home.jsx';
 import Portfolio from './pages/Portfolio/Portfolio.jsx';
 import Resume from './pages/Resume/Resume.jsx';
-import Contact from './pages/Contact/Contact.jsx';
 
 // Routers
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './old.css';
-import './new.css';
+import './styles.css';
 
 const router = createBrowserRouter([
   {
@@ -33,11 +31,7 @@ const router = createBrowserRouter([
       {
         path: '/resume',
         element: <Resume />
-      },
-      // {
-      //   path: '/contact',
-      //   element: <Contact />
-      // }
+      }
     ]
   }
 ]);
