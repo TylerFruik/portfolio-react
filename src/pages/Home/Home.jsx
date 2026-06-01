@@ -6,7 +6,6 @@ const Home = () => {
       <div className="banner">
         <img src="" alt="" />
         <img className="profile-picture" src="images/pfp.png" alt="Tyler Fruik's face"/>
-        <h2>Updated weekly!</h2>
       </div>
       <div className="custom-container">
         <div className="segment">

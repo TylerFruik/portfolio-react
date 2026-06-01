@@ -34,18 +34,25 @@ Link a {
   min-height: 68vh;
 }
 
-.custom-btn {
-  border: 2px solid var(--text);
-  background-color: var(--tertiary);
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 6px 0px rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
-  color: var(--text);
-  cursor: pointer;
-  transition: background-color 0.8s ease;
+.segment {
+  display: flex;
+  flex-flow: row nowrap;
+  margin: 5px;
 }
 
-.custom-btn:hover {
-  background-color: var(--primary);
-  border: 2px solid var(--text);
+.title {
+  display: block;
+  flex: 10%;
+  padding-right: 1%;
+  margin: 2%;
+  border-right: 5px solid var(--tertiary);
+}
+
+.title h3 {
+  padding: 2%;
+  text-align: right;
+  font-size: 300%;
+  color: var(--tertiary);
 }
 
 /* #endregion */
@@ -86,30 +93,7 @@ header h1 {
 }
 /* #endregion */
 
-/* * ABOUT ME *//* #region */
-#about-me-content {
-  display: flex;
-  flex-flow: column wrap;
-  align-items: center;
-}
-
-#about-me-content p {
-  display: flex;
-  margin: 10px;
-  font-size: 150%;
-}
-
-.question {
-  padding-bottom: 60px;
-}
-  
-.question h4 {
-  font-size: 30px;
-}
-
-/* #endregion */
-
-/*  * ABOUT ME WAVES */ /* #region */
+/*  * ABOUT ME WAVES *//* #region */
 .wave {
   position: absolute;
   top: 0;
@@ -194,30 +178,38 @@ header h1 {
   margin: 10px;
 }
 
-.banner h2 {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: var(--tertiary);
-  padding: 5px;
-  margin: 20px 40px;
-  font-size: 48px;
-}
 /* #endregion */
 
-/* * PORTFOLIO *//* #region */
+/* * ABOUT ME PAGE *//* #region */
+#about-me-content {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+}
+
+#about-me-content p {
+  display: flex;
+  margin: 10px;
+  font-size: 150%;
+}
+
+.question {
+  padding-bottom: 60px;
+}
+  
+.question h4 {
+  font-size: 30px;
+}
+
+/* #endregion */
+
+/* * PORTFOLIO PAGE *//* #region */
 .custom-container {
   display: flex;
   flex-flow: column wrap;
   width: 100%;
   padding-right: 4%;
   text-align: justify;
-}
-
-.segment {
-  display: flex;
-  flex-flow: row nowrap;
-  margin: 5px;
 }
 
 span {
@@ -230,21 +222,6 @@ span {
   flex: 100%
 }
 
-.title {
-  display: block;
-  flex: 10%;
-  padding-right: 1%;
-  margin: 2%;
-  border-right: 5px solid var(--tertiary);
-}
-
-.title h3 {
-  padding: 2%;
-  text-align: right;
-  font-size: 300%;
-  color: var(--tertiary);
-}
-
 .content {
   display: flex;
   flex: 90%;
@@ -253,6 +230,21 @@ span {
   margin: 10px;
   padding: 20px;
 }
+.custom-btn {
+  border: 2px solid var(--text);
+  background-color: var(--tertiary);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 6px 0px rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.8s ease;
+  height: 50px;
+}
+
+.custom-btn:hover {
+  background-color: var(--primary);
+  border: 2px solid var(--text);
+}
+
 /* #endregion */
 
 /* * PORTFOLIO COMPLETED PROJECTS *//* #region */
@@ -363,7 +355,7 @@ span {
 
 /* #endregion */
 
-/*  * RESUME *//* #region */
+/*  * RESUME PAGE *//* #region */
 .resume {
   width: 100%;
   min-height: 68vh;
@@ -429,5 +421,115 @@ footer {
 
 .phone {
   margin: 60px;
+}
+/* #endregion */
+
+/*  * MEDIA QUERIES *//* #region */
+@media screen and (max-width: 1422px) {
+/* ! GLOBAL */
+.segment {
+  flex-flow: column nowrap;
+}
+
+.title {
+  display: flex;
+  border-right: none;
+  border-bottom: 5px solid var(--tertiary);
+}
+
+.title h3 {
+  padding: 10px;
+  text-align: center;
+  font-size: 300%;
+  color: var(--tertiary);
+}
+
+/* ! HEADER */
+/* no changes at this size */
+/* ! ABOUT ME */
+  .banner {
+    height: 300px;
+  }
+
+  .profile-picture {
+    width: 280px;
+    height: 280px;
+  }
+/* ! PORTFOLIO */
+/* no changes at this size */
+/* ! RESUME */
+/* no changes at this size */
+/* ! FOOTER */
+  /* no changes at this size */
+  header {
+    /* background-color: red; */
+  }
+}
+
+@media screen and (max-width: 1200px) {
+/* ! GLOBAL */
+/* no changes at this size */
+/* ! HEADER */
+/* no changes at this size */
+/* ! ABOUT ME */
+  .banner {
+    height: 250px;
+  }
+
+  .profile-picture {
+    width: 230px;
+    height: 230px;
+  }
+/* ! PORTFOLIO */
+  .custom-btn {
+    white-space: nowrap;
+  }
+  .portfolio-header h2 {
+    font-size: 28px;
+  }
+
+  .portfolio-header h3 {
+    font-size: 22px;
+  }
+
+/* ! RESUME */
+/* no changes at this size */
+/* ! FOOTER */
+/* no changes at this size */
+  header {
+    /* background-color: yellow; */
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  
+  
+  header {
+    /* background-color: green; */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  
+  
+  header {
+    /* background-color: blue; */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  
+  
+  header {
+    /* background-color: violet; */
+  }
+}
+
+@media screen and (max-width: 320px) {
+  
+  
+  header {
+    /* background-color: red; */
+  }
 }
 /* #endregion */
