@@ -1,0 +1,39 @@
+name: Auto-bump version
+
+# Runs on every push to main. Bumps package.json's patch version by one, commits the change back
+# to main, and stops there — Netlify's own deploy hook (already watching main) picks up the new
+# commit and builds it, so this workflow doesn't build or deploy anything itself.
+#
+# Loop guard: the bump commit's message includes "[skip ci]". GitHub Actions recognizes that tag
+# on push events and won't re-trigger this same workflow for that push — without it, the bump
+# commit would trigger another run, which would bump again, forever.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bump patch version
+        run: node scripts/bump-version.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          VERSION=$(node -p "require('./package.json').version")
+          git add package.json
+          git commit -m "chore: bump version to $VERSION [skip ci]"
+          git push

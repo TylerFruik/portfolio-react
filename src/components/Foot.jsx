@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import VersionBadge from './VersionBadge';
 
 const Foot = () => {
 
@@ -51,6 +52,7 @@ const Foot = () => {
               </a>
           </nav>
         </div>
+        <VersionBadge />
     </footer>
   )
 }
