@@ -1,159 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-//  * Portfolio data object
-// #region
-const portfolioApps = {
-  loveStruck : {
-    name : 'loveStruck',
-    deployed : "https://lovestruck.onrender.com/",
-    repo : 'https://github.com/devinshade/lovestruck',
-    tags: []
-  },
-  giftPot : {
-    name: 'giftPot',
-    deployed : 'https://giftpot-d834bfa62933.herokuapp.com/',
-    repo : 'https://github.com/TylerFruik/GiftPot',
-    tags: []
-  },
-  lilChefs : {
-    name: 'lilChefs',
-    deployed : 'https://tylerfruik.github.io/lil-chefs/',
-    repo : 'https://github.com/TylerFruik/lil-chefs',
-    tags: []
-  },
-  passwordGenerator : {
-    name: 'passwordGenerator',
-    deployed : 'https://tylerfruik.github.io/Password-Generator/',
-    repo : 'https://github.com/TylerFruik/Password-Generator',
-    tags: []
-  },
-  socialNetworkBackendAPI : {
-    name: 'socialNetworkBackendAPI',
-    deployed : null,
-    repo : 'https://github.com/TylerFruik/Social-Network-API',
-    tags: []
-  },
-  workdayScheduler : {
-    name: 'workdayScheduler',
-    deployed : 'https://tylerfruik.github.io/Work-Day-Scheduler/',
-    repo : 'https://github.com/TylerFruik/Work-Day-Scheduler',
-    tags: []
-  },
-  frontendQuiz : {
-    name: 'frontendQuiz',
-    deployed : 'https://tylerfruik.github.io/Frontend-Quiz/',
-    repo : 'https://github.com/TylerFruik/Frontend-Quiz',
-    tags: []
-  },
-  logoMaker : {
-    name: 'logoMaker',
-    deployed : null,
-    repo : 'https://github.com/TylerFruik/Logo-Generator',
-    tags: []
-  },
-  noteTaker : {
-    name: 'noteTaker',
-    deployed : 'https://w11notetaker-364489c73d7e.herokuapp.com/',
-    repo : 'https://github.com/TylerFruik/Note-Taking-App',
-    tags: []
-  },
-  // project : {
-  //   deployed : '',
-  //   repo : '',
-  //   tags: []
-  // }
-}
-// #endregion
+// Portfolio project data. Add a new project by appending one object here -- the grid re-flows
+// automatically (styles.css's .project-grid), no row/column math to redo. (2026-08-20 refactor,
+// replacing the old layout where every project was hand-written twice -- once in the "deployed"
+// view's JSX, once in the "repo" view's -- across two fixed-width rows sized for exactly 9 tiles.
+// Adding, removing, or reordering a project used to mean editing four separate places; now it's
+// one array entry.)
+//
+// Shape of each entry:
+//   id        — stable key. Also the image filename when image is true: public/images/<id>.png
+//   title     — display name. Wraps naturally inside the tile; no manual line breaks needed.
+//   image     — true if public/images/<id>.png exists. Omit/false to render a text-only tile
+//               (.no-image in styles.css) -- for adding a project before its screenshot is ready.
+//   deployed  — live URL (site, GitHub Pages, etc.), or null if there isn't one.
+//   repo      — GitHub repo URL, or null if there isn't one.
+//   featured  — true for the one large lead tile. Optional, defaults to false/small.
+const PROJECTS = [
+  { id: 'loveStruck', title: 'Love Struck', image: true,
+    deployed: 'https://lovestruck.onrender.com/', repo: 'https://github.com/devinshade/lovestruck', featured: true },
+  { id: 'giftPot', title: 'Gift Pot', image: true,
+    deployed: 'https://giftpot-d834bfa62933.herokuapp.com/', repo: 'https://github.com/TylerFruik/GiftPot' },
+  { id: 'lilChefs', title: "Lil' Chefs", image: true,
+    deployed: 'https://tylerfruik.github.io/lil-chefs/', repo: 'https://github.com/TylerFruik/lil-chefs' },
+  { id: 'passwordGenerator', title: 'Password Generator', image: true,
+    deployed: 'https://tylerfruik.github.io/Password-Generator/', repo: 'https://github.com/TylerFruik/Password-Generator' },
+  { id: 'workdayScheduler', title: 'Workday Scheduler', image: true,
+    deployed: 'https://tylerfruik.github.io/Work-Day-Scheduler/', repo: 'https://github.com/TylerFruik/Work-Day-Scheduler' },
+  { id: 'socialNetworkBackendAPI', title: 'Social Network Backend API', image: true,
+    deployed: null, repo: 'https://github.com/TylerFruik/Social-Network-API' },
+  { id: 'logoMaker', title: 'Logo Maker', image: true,
+    deployed: null, repo: 'https://github.com/TylerFruik/Logo-Generator' },
+  { id: 'frontendQuiz', title: 'Frontend Quiz', image: true,
+    deployed: 'https://tylerfruik.github.io/Frontend-Quiz/', repo: 'https://github.com/TylerFruik/Frontend-Quiz' },
+  { id: 'noteTaker', title: 'Note Taker', image: true,
+    deployed: 'https://w11notetaker-364489c73d7e.herokuapp.com/', repo: 'https://github.com/TylerFruik/Note-Taking-App' },
+  // SDET Interview Prep (2026-08-20): link-only per Tyler -- the practice app itself lives in the
+  // Coherence vault, not this repo. Just its GitHub Pages deployment + source repo. No screenshot
+  // yet, so it renders as a text-only tile (image: false) until one's added.
+  { id: 'sdetPractice', title: 'SDET Interview Prep', image: false,
+    deployed: 'https://tylerfruik.github.io/sdet-practice/', repo: 'https://github.com/TylerFruik/sdet-practice' },
+  // Add new projects here.
+];
 
 const titleDeployed = 'Deployed Websites';
 const titleRepos = 'GitHub Repos';
 
 const Portfolio = () => {
 
-  const [ showRepoLinks, setShowRepoLinks ] = useState(false);
+  const [showRepoLinks, setShowRepoLinks] = useState(false);
   const toggleDisplay = () => {
     setShowRepoLinks(prevState => !prevState);
   }
 
   return (
     <div className='full-page'>
-      {showRepoLinks ? (
-      <div className="segment">
-        <div className="title">
-            <h3>Developer</h3>
-            <h3>Portfolio</h3>
-        </div>
-        <div className="content" id="completed-projects-content">
-          <div className='portfolio-header'>
-            <div>
-              <h2>Click on any image below to see one of many <span>{titleDeployed}</span>!</h2>
-              <h3>To see their respective <span>{titleRepos}</span>, click the button on the right!</h3>
-            </div>
-            <button
-            className='custom-btn p-2 m-3'
-            onClick={toggleDisplay}
-            >Click here!
-            </button>
-          </div>
-          <div className='first-row'>
-            <div className="project-links" id="featured">
-              <a href={portfolioApps.loveStruck.deployed} target="_blank">
-                <img src={`images/${portfolioApps.loveStruck.name}.png`} alt="Visual example of a full website created by Tyler Fruik using "/>
-                <h4>Love<br/>Struck</h4>
-              </a>
-            </div>
-            <div className="project-links" id="first-row-smaller">
-              <a className="smaller-link" href={portfolioApps.giftPot.deployed} target="_blank">
-                <img src={`images/${portfolioApps.giftPot.name}.png`} alt="Visual example of a full website created by Tyler Fruik using Handlebars and SQL through MVC, ORM, and OOP"/>
-                <h4>Gift<br/>Pot</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.lilChefs.deployed} target="_blank">
-                <img src={`images/${portfolioApps.lilChefs.name}.png`} alt="Visual example of a recipe program created by Tyler Fruik using API calls"/>
-                <h4>Lil'<br/>Chefs</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.passwordGenerator.deployed} target="_blank">
-                <img src={`images/${portfolioApps.passwordGenerator.name}.png`} alt="Visual example of a password generating program created by Tyler Fruik"/>
-                <h4>Password<br/>Generator</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.workdayScheduler.deployed} target="_blank">
-                <img src={`images/${portfolioApps.workdayScheduler.name}.png`} alt=""/>
-                <h4>Workday<br/>Scheduler</h4>
-              </a>
-            </div>
-          </div>
-          <div className='second-row'>
-            <div className="project-links" id="second-row-smaller">
-              <a className="smaller-link" href={portfolioApps.socialNetworkBackendAPI.deployed} target="_blank">
-                <img src={`images/${portfolioApps.socialNetworkBackendAPI.name}.png`} alt=""/>
-                <h4>Social Network<br/>Backend API</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.logoMaker.deployed} target="_blank">
-                <img src={`images/${portfolioApps.logoMaker.name}.png`} alt=""/>
-                <h4>Logo<br/>Maker</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.frontendQuiz.deployed} target="_blank">
-                <img src={`images/${portfolioApps.frontendQuiz.name}.png`} alt=""/>
-                <h4>Frontend<br/>Quiz</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.noteTaker.deployed} target="_blank">
-                <img src={`images/${portfolioApps.noteTaker.name}.png`} alt=""/>
-                <h4>Note<br/>Taker</h4>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      ) : (
       <div className="segment">
         <div className="title">
           <h3>Developer</h3>
           <h3>Portfolio</h3>
         </div>
-        <div className= "content" id="completed-projects-content">
+        <div className="content" id="completed-projects-content">
           <div className='portfolio-header'>
             <div>
-              <h2>Click on any image below to see one of many <span>{titleRepos}</span>!</h2>
-              <h3>To see their respective <span>{titleDeployed}</span>, click the button on the right!</h3>
+              <h2>Click on any project below to see one of many <span>{showRepoLinks ? titleRepos : titleDeployed}</span>!</h2>
+              <h3>To see their respective <span>{showRepoLinks ? titleDeployed : titleRepos}</span>, click the button on the right!</h3>
             </div>
             <button
             className='custom-btn p-2 m-3'
@@ -161,55 +71,24 @@ const Portfolio = () => {
             >Click here!
             </button>
           </div>
-          <div className='first-row'>
-            <div className="project-links" id="featured">
-              <a href={portfolioApps.loveStruck.repo} target="_blank">
-                <img src={`images/${portfolioApps.loveStruck.name}.png`} alt="Visual example of a full website created by Tyler Fruik using "/>
-                <h4>Love<br/>Struck</h4>
-              </a>
-            </div>
-            <div className="project-links" id="first-row-smaller">
-              <a className="smaller-link" href={portfolioApps.giftPot.repo} target="_blank">
-                <img src={`images/${portfolioApps.giftPot.name}.png`} alt="Visual example of a full website created by Tyler Fruik using Handlebars and SQL through MVC, ORM, and OOP"/>
-                <h4>Gift<br/>Pot</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.lilChefs.repo} target="_blank">
-                <img src={`images/${portfolioApps.lilChefs.name}.png`} alt="Visual example of a recipe program created by Tyler Fruik using API calls"/>
-                <h4>Lil'<br/>Chefs</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.passwordGenerator.repo} target="_blank">
-                <img src={`images/${portfolioApps.passwordGenerator.name}.png`} alt="Visual example of a password generating program created by Tyler Fruik"/>
-                <h4>Password<br/>Generator</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.workdayScheduler.repo} target="_blank">
-                <img src={`images/${portfolioApps.workdayScheduler.name}.png`} alt=""/>
-                <h4>Workday<br/>Scheduler</h4>
-              </a>
-            </div>
-          </div>
-          <div className='second-row'>
-            <div className="project-links" id="second-row-smaller">
-              <a className="smaller-link" href={portfolioApps.socialNetworkBackendAPI.repo} target="_blank">
-                <img src={`images/${portfolioApps.socialNetworkBackendAPI.name}.png`} alt=""/>
-                <h4>Social Network<br/>Backend API</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.logoMaker.repo} target="_blank">
-                <img src={`images/${portfolioApps.logoMaker.name}.png`} alt=""/>
-                <h4>Logo<br/>Maker</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.frontendQuiz.repo} target="_blank">
-                <img src={`images/${portfolioApps.frontendQuiz.name}.png`} alt=""/>
-                <h4>Frontend<br/>Quiz</h4>
-              </a>
-              <a className="smaller-link" href={portfolioApps.noteTaker.repo} target="_blank">
-                <img src={`images/${portfolioApps.noteTaker.name}.png`} alt=""/>
-                <h4>Note<br/>Taker</h4>
-              </a>
-            </div>
+          <div className='project-grid'>
+            {PROJECTS.map(p => {
+              // Falls back to whichever link actually exists, so a project with no deployed site
+              // (or, in principle, no repo) is never a dead link in either view -- previously
+              // socialNetworkBackendAPI/logoMaker pointed at href={null} in the deployed view.
+              const href = showRepoLinks ? (p.repo || p.deployed) : (p.deployed || p.repo);
+              if (!href) return null;
+              const tileClass = 'project-tile' + (p.featured ? ' featured' : '') + (p.image ? '' : ' no-image');
+              return (
+                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer">
+                  {p.image && <img src={`images/${p.id}.png`} alt={`Screenshot of ${p.title}, a project by Tyler Fruik`} />}
+                  <h4>{p.title}</h4>
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>
-      )}
     </div>
   )
 }

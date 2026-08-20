@@ -15,3 +15,10 @@ All code written manually by Tyler Fruik.
 
 ### The following is an image of the final product:
 ![Image URL](/portfolio-main/public/images/MockUp.png)
+
+## Versioning
+
+`package.json`'s `version` field auto-increments (patch number) on every push to `main`, via
+`.github/workflows/version-bump.yml` — see that file and `scripts/bump-version.mjs` for how.
+The current version renders in the footer (`VersionBadge` component), pulled straight from
+`package.json` at build time. To bump manually instead: `npm run version:bump`.
