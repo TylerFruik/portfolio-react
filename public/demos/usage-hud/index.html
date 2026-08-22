@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Usage HUD — Demo | Tyler Fruik</title>
+<meta name="description" content="Standalone demo of a small usage-visualization widget: two vertical edge bars that fill with color as usage climbs, built by Tyler Fruik.">
+<style>
+  :root {
+    --bg:#101216; --card:#181b22; --txt:#d6dae3; --dim:#8b91a0; --line:#2a2f3a; --accent:#e8b84b;
+    --action:#e25555; --presence:#4caf78; --intention:#5b7ff6; --identity:#9c6bd8;
+  }
+  * { box-sizing:border-box; margin:0; }
+  html, body { height:100%; }
+  body {
+    background:var(--bg); color:var(--txt); font:15px/1.6 'Segoe UI',system-ui,sans-serif;
+    padding:28px clamp(16px,4vw,48px); min-height:100vh; overflow-x:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  }
+  h1 { font-size:22px; letter-spacing:.06em; font-weight:700; margin-bottom:10px; }
+  h1 span { color:var(--accent); }
+  p { color:var(--dim); max-width:520px; margin: 0 auto 6px; }
+  .back { display:inline-block; margin-top:26px; color:var(--dim); font-size:13px;
+    border:1px solid var(--line); border-radius:99px; padding:6px 16px; text-decoration:none; }
+  .back:hover { color:var(--txt); border-color:var(--dim); }
+  .legend { margin-top:22px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; font-size:12px; color:var(--dim); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .swatch { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .sw-identity { background:var(--identity); } .sw-presence { background:var(--presence); }
+  .sw-intention { background:var(--intention); } .sw-action { background:var(--action); }
+  .note { margin-top:26px; font-size:12px; color:var(--dim); opacity:.8; max-width:480px; }
+
+  /* --- Claude Usage HUD styles, copied from the real dashboard's dashboard.css --- */
+  .chud-edge { position:fixed; top:16px; bottom:16px; width:8px; z-index:40; }
+  .chud-edge-left { left:6px; }
+  .chud-edge-right { right:6px; }
+  .chud-edge-track { position:relative; width:100%; height:100%; background:var(--line);
+    border-radius:99px; overflow:hidden; opacity:.9; }
+  .chud-edge-fill { position:absolute; left:0; bottom:0; width:100%; height:0%;
+    border-radius:99px; transition:height .5s, background-color .5s; }
+  .chud-edge-fill--identity { background:var(--identity); }
+  .chud-edge-fill--presence { background:var(--presence); }
+  .chud-edge-fill--intention { background:var(--intention); }
+  .chud-edge-fill--action { background:var(--action); }
+  .chud-edge-fill--unknown { background:var(--dim); opacity:.3; }
+  .chud-edge-dot { position:absolute; left:50%; bottom:0%; transform:translate(-50%, 50%);
+    width:22px; height:22px; border-radius:50%; z-index:2; cursor:grab;
+    border:2px solid var(--bg); display:flex; align-items:center; justify-content:center;
+    transition:bottom .5s, background-color .5s; }
+  .chud-edge.chud-dragging .chud-edge-dot { cursor:grabbing; transition:background-color .5s; }
+  .chud-edge-dot--identity { background:var(--identity); }
+  .chud-edge-dot--presence { background:var(--presence); }
+  .chud-edge-dot--intention { background:var(--intention); }
+  .chud-edge-dot--action { background:var(--action); }
+  .chud-edge-dot--unknown { background:var(--dim); opacity:.5; }
+  .chud-edge-dot-num { font-size:8px; font-weight:700; color:#fff; line-height:1; letter-spacing:-.02em; }
+  @media (max-width: 640px) {
+    .chud-edge { width:4px; opacity:.6; }
+    .chud-edge-left { left:8px; } .chud-edge-right { left:auto; right:8px; }
+    .chud-edge-dot { width:14px; height:14px; border-width:1px; }
+  }
+</style>
+</head>
+<body>
+
+  <h1>Claude Usage <span>HUD</span></h1>
+  <p>A small widget I built for my own Coherence dashboard: two edge-mounted bars that fill
+     bottom-to-top as usage climbs, colored by band instead of a plain percentage. The real
+     version polls my own Claude usage privately — this page swaps that for a looping simulation
+     so the visualization can be shown here without exposing any personal data.</p>
+  <p><strong>Drag either bar</strong> to preview any level yourself, or just watch them loop.</p>
+
+  <div class="legend">
+    <span><i class="swatch sw-identity"></i>Identity — waking up / winding down</span>
+    <span><i class="swatch sw-presence"></i>Presence — gettin' goin</span>
+    <span><i class="swatch sw-intention"></i>Intention — focused, creating</span>
+    <span><i class="swatch sw-action"></i>Action — almost there</span>
+  </div>
+
+  <div class="note">Left bar = session usage (simulated 5h window). Right bar = weekly usage
+    (simulated 7d window). Colors and thresholds are mine — not a red/yellow/green "danger" scale,
+    just how each stretch of a work session tends to feel.</div>
+
+  <a class="back" href="/">&larr; Back to portfolio</a>
+
+<script>
+(function () {
+  var BANDS = [
+    { max: 15, hue: "identity", label: "Just waking up" },
+    { max: 40, hue: "presence", label: "Gettin’ goin for the day. Mostly vibes" },
+    { max: 70, hue: "intention", label: "Focused and productive. Creating" },
+    { max: 90, hue: "action", label: "C’mon keep going, almost there!" },
+    { max: 100, hue: "identity", label: "Time to rest" },
+  ];
+  function bandFor(usedPct) {
+    for (var i = 0; i < BANDS.length; i++) if (usedPct <= BANDS[i].max) return BANDS[i];
+    return BANDS[BANDS.length - 1];
+  }
+
+  function buildBar(id, side, label) {
+    var wrap = document.createElement("div");
+    wrap.className = "chud-edge chud-edge-" + side;
+    wrap.id = id;
+    wrap.title = label;
+    var track = document.createElement("div");
+    track.className = "chud-edge-track";
+    var fill = document.createElement("div");
+    fill.className = "chud-edge-fill chud-edge-fill--unknown";
+    track.appendChild(fill);
+    var dot = document.createElement("div");
+    dot.className = "chud-edge-dot chud-edge-dot--unknown";
+    var num = document.createElement("span");
+    num.className = "chud-edge-dot-num";
+    dot.appendChild(num);
+    wrap.appendChild(track);
+    wrap.appendChild(dot);
+    document.body.appendChild(wrap);
+    return { wrap: wrap, fill: fill, dot: dot, num: num, currentHue: "unknown" };
+  }
+
+  var els = {
+    session: buildBar("chud-demo-session", "left", "Session usage (simulated)"),
+    weekly: buildBar("chud-demo-weekly", "right", "Weekly usage (simulated)"),
+  };
+
+  function applyUsed(target, used, labelPrefix, note) {
+    var b = bandFor(used);
+    target.fill.className = "chud-edge-fill chud-edge-fill--" + b.hue;
+    target.fill.style.height = used + "%";
+    target.dot.style.bottom = used + "%";
+    if (target.currentHue !== b.hue) {
+      target.dot.className = "chud-edge-dot chud-edge-dot--" + b.hue;
+      target.currentHue = b.hue;
+    }
+    target.num.textContent = Math.round(used);
+    target.wrap.title = labelPrefix + ": " + Math.round(used * 10) / 10 + "% (simulated) — " +
+      (note || b.label);
+  }
+
+  // --- Self-contained demo loop (no network, no personal data) ---
+  // Session bar loops faster (~24s round trip), weekly bar slower (~54s), so the two drift in and
+  // out of phase and visitors see every color band within the first loop without needing to wait.
+  var start = Date.now();
+  var dragging = { session: false, weekly: false };
+
+  function loopValue(periodMs, offsetMs) {
+    var t = ((Date.now() - start + offsetMs) % periodMs) / periodMs; // 0..1
+    // Triangle wave 0 -> 100 -> 0, smoother-looking than a sawtooth reset.
+    return t < 0.5 ? t * 2 * 100 : (1 - t) * 2 * 100;
+  }
+
+  function tick() {
+    if (!dragging.session) applyUsed(els.session, loopValue(24000, 0), "Session");
+    if (!dragging.weekly) applyUsed(els.weekly, loopValue(54000, 6000), "Weekly");
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // --- Drag-to-preview on both bars (public demo: unlike the private version, both sides are
+  // interactive here since the whole point of this page is letting a visitor play with it) ---
+  function wireDrag(target, key, wrapEl) {
+    var rect = null;
+    function usedFromY(clientY) {
+      var pct = ((rect.bottom - clientY) / rect.height) * 100;
+      return Math.max(0, Math.min(100, Math.round(pct * 10) / 10));
+    }
+    wrapEl.addEventListener("pointerdown", function (e) {
+      dragging[key] = true;
+      wrapEl.classList.add("chud-dragging");
+      wrapEl.setPointerCapture(e.pointerId);
+      rect = wrapEl.getBoundingClientRect();
+      applyUsed(target, usedFromY(e.clientY), target === els.session ? "Session" : "Weekly", "drag to preview");
+      e.preventDefault();
+    });
+    wrapEl.addEventListener("pointermove", function (e) {
+      if (!dragging[key] || !rect) return;
+      applyUsed(target, usedFromY(e.clientY), target === els.session ? "Session" : "Weekly", "drag to preview");
+    });
+    function endDrag(e) {
+      if (!dragging[key]) return;
+      dragging[key] = false;
+      wrapEl.classList.remove("chud-dragging");
+      try { wrapEl.releasePointerCapture(e.pointerId); } catch (err) {}
+      rect = null;
+      // Resumes the auto loop from wherever it naturally is on the next tick() frame.
+    }
+    wrapEl.addEventListener("pointerup", endDrag);
+    wrapEl.addEventListener("pointercancel", endDrag);
+  }
+  wireDrag(els.session, "session", els.session.wrap);
+  wireDrag(els.weekly, "weekly", els.weekly.wrap);
+})();
+</script>
+</body>
+</html>

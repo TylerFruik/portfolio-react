@@ -39,6 +39,21 @@ const PROJECTS = [
   // yet, so it renders as a text-only tile (image: false) until one's added.
   { id: 'sdetPractice', title: 'SDET Interview Prep', image: false,
     deployed: 'https://tylerfruik.github.io/sdet-practice/', repo: 'https://github.com/TylerFruik/sdet-practice' },
+  // Photography & 3D Printing storefronts (2026-08-22): groundwork/placeholder sites, built and
+  // deployed same day. No screenshots yet (content itself is still placeholder-marked), so both
+  // render as text-only tiles until real photos/prints exist to show.
+  { id: 'photographyStorefront', title: 'Photography Storefront', image: false,
+    deployed: 'https://photography-storefront.netlify.app/', repo: 'https://github.com/TylerFruik/photography-storefront' },
+  { id: 'printingStorefront', title: '3D Printing Storefront', image: false,
+    deployed: 'https://3d-printing-storefront.netlify.app/', repo: 'https://github.com/TylerFruik/3d-printing-storefront' },
+  // Claude Usage HUD demo (2026-08-22): a small widget from my personal Coherence dashboard --
+  // vertical edge bars that fill/color by usage band. Lives as a static page in this repo's own
+  // public/demos/usage-hud/ (no separate repo -- it's one self-contained HTML file, not a project
+  // of its own), so `repo` points at that folder on GitHub instead of a dedicated repo. The real
+  // version reads my own usage privately; this one runs a looping simulation, no personal data.
+  { id: 'usageHud', title: 'Claude Usage HUD (demo)', image: false,
+    deployed: '/demos/usage-hud/index.html',
+    repo: 'https://github.com/TylerFruik/portfolio-react/tree/main/public/demos/usage-hud' },
   // Add new projects here.
 ];
 
