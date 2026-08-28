@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { PROJECTS } from '../content/projects';
 import CoherenceCard from './CoherenceCard';
 
+// RETIRED 2026-08-28 (same day this was built) -- Tyler: "I no longer want About Me and Portfolio
+// to be different pages." No longer imported/routed anywhere; CoherenceHome.jsx now renders these
+// same cards alongside the About Me content on one merged page. Left in place, not deleted, in
+// case a standalone cards-only page is wanted again later.
+//
 // Rebuilt 2026-08-28, real implementation of the two-column layout (wireframe shown and approved
 // first, per Tyler: "If it's less work, we could maybe try a wireframing first?"). Tyler's own
 // correction on what this page needed: "I was asking for the entire contents of the Portfolio

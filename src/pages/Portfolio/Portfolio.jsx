@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useCoherenceTheme } from '../../coherence/CoherenceThemeContext';
-import CoherencePortfolio from '../../coherence/CoherencePortfolio';
+// CoherencePortfolio.jsx (the old standalone 2-col cards-only page) is retired for v2 as of
+// 2026-08-28 -- Tyler: "I no longer want About Me and Portfolio to be different pages. I want two
+// columns alongside everything that's currently on About Me." Both v2 nav links now render the
+// same merged page; CoherenceHome.jsx is what has the cards now.
+import CoherenceHome from '../../coherence/CoherenceHome';
 import { PROJECTS } from '../../content/projects';
 
 // Pointer-tilt handler (2026-08-28) -- same --rx/--ry formula as Coherence's own hue.js
@@ -37,7 +41,7 @@ const Portfolio = () => {
     setShowRepoLinks(prevState => !prevState);
   }
 
-  if (v2) return <CoherencePortfolio />;
+  if (v2) return <CoherenceHome />;
 
   return (
     <div className='full-page'>

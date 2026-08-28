@@ -334,7 +334,29 @@
 .cx-hobby-list li::before { content: ''; position: absolute; left: 0; top: 8px; width: 8px; height: 8px;
   border-radius: 50%; background: var(--cx-accent); box-shadow: 0 0 6px var(--cx-accent); }
 
-/* ---------- Portfolio page: right-justified label column + 2-col card column ----------
+/* ---------- Home (About Me + Portfolio merged, fifth pass 2026-08-28) ----------
+   Tyler: "I no longer want About Me and Portfolio to be different pages. I want two columns
+   alongside everything that's currently on About Me." Left column is every About Me section,
+   completely unchanged from before; right column is every project card (still two wide), running
+   alongside it instead of living on its own route -- both v2 nav links land on this same page
+   now (see pages/Portfolio/Portfolio.jsx). Reuses .cx-pf-cards (the 2-col card grid) from the old
+   standalone Portfolio layout below. */
+.cx-home-grid { display: grid; grid-template-columns: minmax(0, 760px) 1fr; gap: 40px; align-items: start; }
+.cx-home-cards-head { text-align: right; margin-bottom: 4px; }
+.cx-home-cards-head button { position: static; }
+
+@media (max-width: 1100px) {
+  .cx-home-grid { grid-template-columns: 1fr; }
+  .cx-home-cards-head { text-align: left; }
+}
+@media (max-width: 560px) {
+  .cx-pf-cards { grid-template-columns: 1fr; }
+}
+
+/* ---------- Portfolio page (retired for v2, 2026-08-28 -- see .cx-home-grid above): right-
+   justified label column + 2-col card column. CoherencePortfolio.jsx that used this is no longer
+   routed anywhere; left in place rather than deleted in case a standalone cards-only page is
+   wanted again later. */
    Built 2026-08-28, real implementation of the wireframe shown and approved first. Tyler's own
    correction on the ask: "I was asking for the entire contents of the Portfolio page, the cards,
    THOSE to be on the column on the right of the screen. And I meant specifically Right Justified."
