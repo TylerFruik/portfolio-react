@@ -57,10 +57,9 @@ export default function CoherenceHome() {
     <div className="cx-page">
       <div className="cx-home-grid">
         <div className="cx-home-left">
-          <div className="cx-hero">
-            <img className="cx-hero-photo" src="images/pfp.png" alt="Tyler Fruik" />
+          <div className="cx-hero-card">
+            <img className="cx-hero-pfp" src="images/pfp.png" alt="Tyler Fruik" />
             <div className="cx-hero-skills">
-              <div className="cx-section-title"><span className="cx-dot" />Skills</div>
               <div className="cx-skill-row">
                 {SKILLS.map(s => (
                   <CoherenceSkillChip key={s.name} name={s.name} logo={s.logo} />

@@ -64,6 +64,10 @@ header {
   position: relative;
 }
 
+/* v1/v2 view switch corner (2026-08-28) -- CoherenceToggle.jsx is themed with hardcoded hex so it
+   renders correctly here too, same as it does inside the v2 sticky topbar. */
+.cx-v1-toggle-corner { position: absolute; top: 14px; left: 14px; z-index: 5; }
+
 header h1 {
   display: inline-block;
   position: absolute;

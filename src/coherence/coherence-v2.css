@@ -64,10 +64,39 @@
   background: var(--cx-card); }
 
 /* ---------- Wordmark (TYLER FRUIK, ported from logo-anim.js / COHERENCE) ---------- */
+.cx-wordmark-wrap { position: relative; display: inline-flex; align-items: center; }
 .cx-wordmark { display: inline-flex; font-size: 24px; font-weight: 600; letter-spacing: .12em;
-  text-transform: uppercase; }
+  text-transform: uppercase; cursor: pointer; }
 .cx-letter { display: inline-block; color: #f2f4f8; white-space: pre;
-  transition: color .3s, text-shadow .3s; }
+  transition: color .3s, text-shadow .3s, opacity .3s; }
+
+/* Click-to-open manual trigger menu (2026-08-28, seventh pass) -- Tyler: "When clicking on Tyler
+   Fruik in the breadcrumb, have little colored circles pop out to the right, one for each
+   animation color." See CoherenceWordmark.jsx for the open/close/pause timing logic; this is just
+   the visual: six small dots popping out to the right of the wordmark, each staggered slightly
+   (animation-delay set inline per dot) so they read as popping out in sequence rather than all at
+   once. */
+/* Normal flow, not position:absolute (2026-08-28 fix, same day as first written) -- an absolutely
+   positioned menu popping out over the SAME screen area the v1/v2 toggle sits in (now that the
+   toggle lives right next to the wordmark too) visually buried the toggle under the dots the
+   moment the menu opened. Plain inline-flex instead: opening the menu genuinely widens the
+   wordmark's own box, so the toggle -- a later flex sibling in .cx-header-row -- gets pushed
+   right by the row's own gap, same as any other flex reflow, and there's never an overlap. */
+.cx-hue-menu { display: inline-flex; align-items: center; gap: 7px; margin-left: 12px; }
+.cx-hue-dot { width: 15px; height: 15px; border-radius: 50%; border: none; cursor: pointer;
+  flex: none; box-shadow: 0 0 7px currentColor; opacity: 0; transition: transform .15s;
+  animation: cx-hue-dot-pop .28s ease-out both; }
+.cx-hue-dot:hover { transform: scale(1.3); }
+@keyframes cx-hue-dot-pop {
+  0% { opacity: 0; transform: translateX(-6px) scale(.5); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+.cx-hue-dot-action { background: var(--cx-action); color: var(--cx-action); }
+.cx-hue-dot-presence { background: var(--cx-presence); color: var(--cx-presence); }
+.cx-hue-dot-intention { background: var(--cx-intention); color: var(--cx-intention); }
+.cx-hue-dot-identity { background: var(--cx-identity); color: var(--cx-identity); }
+.cx-hue-dot-gold { background: var(--cx-accent); color: var(--cx-accent); }
+.cx-hue-dot-burnt { background: #e8531f; color: #e8531f; }
 
 /* Four real Coherence hues (2026-08-28: recolored to portfolio gold/orange earlier the same day,
    then Tyler asked for them back -- "bring the 4 Coherence color animations back into rotation."
@@ -93,36 +122,50 @@
 .cx-anim-presence .cx-letter { animation: cx-arc-presence 1.8s ease-in-out both;
   animation-delay: calc(var(--i) * .18s); }
 
-/* More pulses added 2026-08-28 (Tyler: "Intention doesn't look like it should") -- the original
-   only had two flashes before settling into a long flat hold, which didn't read as "stuttering
-   ignition" so much as a slow double-blink. Now flashes three times, each a bit stronger than the
-   last (a lighter genuinely catching), before it holds and fades. */
+/* Ported directly from the real Coherence dashboard's logo-intention-flicker (dashboard.css,
+   "Intention / Blue -- old-hardware ignition"), 2026-08-28 (Tyler: "This should work the same way
+   it does in Coherence" -- the previous version was my own approximation, not the real thing).
+   Old-tungsten-bulb ignition: two quick, uneven partial catches (hard steps() snaps, like a
+   filament flaring and failing to hold) before it truly ignites and eases into a steady ~2s hold,
+   then fades back out. --tw (set per-letter in CoherenceWordmark.jsx, a scattered 0-900ms spread,
+   deliberately non-sequential -- "very not distributed") replaces the real version's inline
+   per-letter dashboard.html attribute; the animation-delay math and 4s per-letter duration are
+   otherwise identical to the source. */
 @keyframes cx-flicker-intention {
-  0%,100% { color:#f2f4f8; text-shadow:none; }
-  8% { color:var(--cx-intention); text-shadow:0 -6px 10px var(--cx-intention), 0 0 6px var(--cx-intention); }
-  13% { color:#f2f4f8; text-shadow:none; }
-  20% { color:var(--cx-intention); text-shadow:0 -8px 14px var(--cx-intention), 0 0 10px var(--cx-intention); }
-  26% { color:#f2f4f8; text-shadow:none; }
-  34% { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); }
-  78% { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); }
+  0%   { color:#f2f4f8; text-shadow:none; animation-timing-function:steps(1,end); }
+  2%   { color:var(--cx-intention); text-shadow:0 -8px 14px var(--cx-intention), 0 0 8px var(--cx-intention); animation-timing-function:steps(1,end); }
+  3%   { color:#f2f4f8; text-shadow:none; animation-timing-function:steps(1,end); }
+  5%   { color:var(--cx-intention); text-shadow:0 -8px 17px var(--cx-intention), 0 0 11px var(--cx-intention); animation-timing-function:steps(1,end); }
+  7%   { color:#f2f4f8; text-shadow:none; animation-timing-function:ease-out; }
+  13%  { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); animation-timing-function:linear; }
+  88%  { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); animation-timing-function:ease-in; }
+  100% { color:#f2f4f8; text-shadow:none; }
 }
-.cx-anim-intention .cx-letter { animation: cx-flicker-intention 2.8s ease-in-out both;
-  animation-delay: calc(var(--i) * .09s); }
+.cx-anim-intention .cx-letter { animation: cx-flicker-intention 4s ease-in-out both;
+  animation-delay: var(--tw, 0ms); }
 
-/* Rebuilt 2026-08-28 (Tyler: "Identity doesn't look like it should") -- the old version was
-   literally cx-arc-presence recolored purple: one symmetric up/down glow, no actual wander to it.
-   Real wander needs at least two peaks so the glow visibly drifts rather than just breathing once;
-   staggered further by --i so letters don't peak in lockstep, reading as a glow ambling down the
-   word instead of a single wave passing through it. */
+/* Rebuilt 2026-08-28 (Tyler: "This should work the same way it does in Coherence") from the real
+   dashboard's logo-candle-lN mechanic (dashboard.css, "Identity / Purple -- one candle,
+   continuously wandering"): a single light traveling across the word, three zones radiating out
+   from wherever it currently sits -- purple + fully visible at the source, fading back toward
+   white over a short range just outside that, then fading toward invisible (opacity, not color)
+   over a longer range past the light's actual edge. The real version bakes this as ~50 hand/script
+   -generated stops per letter, hardcoded for COHERENCE's exact 9 characters and its 3 named
+   waypoints (idle at O, then C, then E) -- not reusable verbatim for a different word. This is the
+   same color-mix + opacity mechanic and the same single continuous 9s-scale pass, generalized to
+   any length via the --i delay-stagger trick already used for Presence/Action, rather than
+   hardcoded per-letter keyframes: each letter dims toward the edges of the light's pass and peaks
+   at color-mix 40% purple + full opacity exactly when the light is "at" it. */
 @keyframes cx-wander-identity {
-  0%,100% { color:#f2f4f8; text-shadow:none; }
-  22% { color:var(--cx-identity); text-shadow:0 0 8px var(--cx-identity), 0 0 14px var(--cx-identity); }
-  38% { color:#f2f4f8; text-shadow:none; }
-  60% { color:var(--cx-identity); text-shadow:0 0 16px var(--cx-identity), 0 0 28px var(--cx-identity); }
-  80% { color:var(--cx-identity); text-shadow:0 0 10px var(--cx-identity), 0 0 18px var(--cx-identity); }
+  0%   { color:#f2f4f8; opacity:.32; }
+  20%  { color:color-mix(in srgb, var(--cx-identity) 7%, #f2f4f8 93%); opacity:.65; }
+  35%  { color:color-mix(in srgb, var(--cx-identity) 40%, #f2f4f8 60%); opacity:1; }
+  50%  { color:color-mix(in srgb, var(--cx-identity) 40%, #f2f4f8 60%); opacity:1; }
+  65%  { color:color-mix(in srgb, var(--cx-identity) 7%, #f2f4f8 93%); opacity:.65; }
+  100% { color:#f2f4f8; opacity:.32; }
 }
-.cx-anim-identity .cx-letter { animation: cx-wander-identity 3.2s ease-in-out both;
-  animation-delay: calc(var(--i) * .16s); }
+.cx-anim-identity .cx-letter { animation: cx-wander-identity 2.4s ease-in-out both;
+  animation-delay: calc(var(--i) * .5s); }
 
 /* Gold: slow fade-in to a shining glow, then a silver/white flash sweeps across the whole word
    (2026-08-28, Tyler: "a real shhing! feel to it"). Two separate animations layered on two
@@ -139,25 +182,41 @@
    CoherenceWordmark.jsx now sets), clipped to the glyph shapes with background-clip: text, so the
    bright band can only ever render where the letters actually are -- then the sweep animates
    background-position across a wide (300%) gradient instead of translating a separate shape. */
+/* Fade-out added 2026-08-28 (Tyler: "The Gold animation should have a slow fade out rather than
+   an instant off"). The old version only ever ramped IN (0%->100%) and relied on the base
+   .cx-letter transition to un-apply it once the class was removed -- fine in theory, but a
+   transition racing a hard class-removal reads as an abrupt snap rather than a real fade,
+   especially on text-shadow. Now the fade-in, hold, AND fade-out all live inside this one
+   keyframe's own timeline (same pattern the other five hues already use), so what plays is
+   exactly what was authored: quick-ish fade in, a hold long enough for the shine sweep to cross
+   it, then a genuinely slow fade back to white over the back half of the animation. */
 @keyframes cx-gold-fade {
-  0% { color:#f2f4f8; text-shadow:none; }
-  100% { color:var(--cx-accent); text-shadow:0 0 10px var(--cx-accent), 0 0 22px var(--cx-accent); }
+  0%   { color:#f2f4f8; text-shadow:none; }
+  18%  { color:var(--cx-accent); text-shadow:0 0 10px var(--cx-accent), 0 0 22px var(--cx-accent); }
+  55%  { color:var(--cx-accent); text-shadow:0 0 10px var(--cx-accent), 0 0 22px var(--cx-accent); }
+  100% { color:#f2f4f8; text-shadow:none; }
 }
-.cx-anim-gold .cx-letter { animation: cx-gold-fade .9s ease-out both;
+.cx-anim-gold .cx-letter { animation: cx-gold-fade 3.2s ease-in-out both;
   animation-delay: calc(var(--i) * 45ms); }
+/* Strengthened 2026-08-28 (Tyler: "the silver swipe is too subtle") -- wider bright band (was a
+   tight 48-52% spike, now 40-60%), full opacity at peak instead of .95, a cooler near-white so it
+   reads as silver against the warm gold rather than just a brighter gold, and a drop-shadow glow
+   on top of the clipped-text gradient for extra punch. Timed to sweep during cx-gold-fade's own
+   hold window (18%-55% of 3.2s = ~.58s-1.76s). */
 @keyframes cx-gold-shine-sweep {
-  0% { background-position: 200% 0; opacity: 0; }
-  8% { opacity: .95; }
-  55% { opacity: .95; }
-  70% { opacity: 0; }
-  100% { background-position: -100% 0; opacity: 0; }
+  0%   { background-position: 220% 0; opacity: 0; }
+  10%  { opacity: 1; }
+  55%  { opacity: 1; }
+  75%  { opacity: 0; }
+  100% { background-position: -120% 0; opacity: 0; }
 }
 .cx-anim-gold { position: relative; }
 .cx-anim-gold::after { content: attr(data-text); position: absolute; inset: 0; white-space: pre;
-  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,.9) 48%, #fff 50%, rgba(255,255,255,.9) 52%, transparent 65%);
-  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  background: linear-gradient(100deg, transparent 22%, rgba(238,242,255,.85) 40%, #fbfcff 50%, rgba(238,242,255,.85) 60%, transparent 78%);
+  background-size: 320% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 5px rgba(255,255,255,.65));
   pointer-events: none;
-  animation: cx-gold-shine-sweep 1.15s ease-in-out .85s both; }
+  animation: cx-gold-shine-sweep 1.3s ease-in-out .55s both; }
 
 /* Burnt orange: a campfire flicker, each letter licking up from the bottom a little differently
    (2026-08-28, Tyler: "warm campfire feel"). --j (set per-letter in CoherenceWordmark.jsx, 0-4) is
@@ -184,13 +243,11 @@
    where .coherence-v2's custom properties don't exist. */
 .cx-top-actions { position: fixed; top: 14px; right: 14px; z-index: 9999;
   display: flex; align-items: center; gap: 10px; }
-/* Moved to its own top-left spot 2026-08-28, sixth pass (Tyler: "move the view swap button to the
-   top left (do not change the positioning of the breadcrumb)"). top:70px rather than 14px is the
-   load-bearing detail here -- the v2 topbar's own sticky row (wordmark + nav) is ~58px tall, so
-   this sits just below that band instead of overlapping the same row the wordmark renders in.
-   Still position:fixed, so it stays reachable at any scroll position exactly like Resume does;
-   it's just offset down far enough to never need to touch the wordmark's own CSS at all. */
-.cx-top-actions-left { position: fixed; top: 70px; left: 14px; z-index: 9999; }
+/* v1/v2 view switch (2026-08-28, eighth pass) -- moved out of its own fixed corner and in next to
+   the wordmark itself, per Tyler: "I want the v1/v2 toggle button to be up in the corner next to
+   Tyler Fruik in the breadcrumb. I just didn't want it messing with anything" -- so this is plain
+   in-flow now (see CoherenceNav.jsx / components/Nav.jsx for where it's rendered), just margined
+   off the wordmark rather than absolutely/fixed positioned. */
 .cx-view-switch { display: flex; gap: 2px; padding: 3px; border-radius: 999px;
   background: #181b22; border: 1px solid #2a2f3a; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
 .cx-view-btn { padding: 6px 15px; border-radius: 999px; border: none; background: transparent;
@@ -332,11 +389,23 @@
    below it -- About, Get to Know a Dev, Creative Hobbies -- goes back to left-aligned in a single
    narrow column, undoing the center-justify pass (that instruction was actually meant for the
    Portfolio route, not this page -- see CoherencePortfolio's own layout notes). */
-.cx-hero { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 4px; }
-.cx-hero-photo { display: block; width: 176px; height: 176px; border-radius: 16px; flex: none;
-  object-fit: cover; border: 3px solid var(--cx-accent2);
+/* Rebuilt 2026-08-28, eighth pass -- Tyler: "Make the pfp bigger and return the banner image to
+   be the backdrop of this section. Put the Skills in front of the banner image with it all
+   contained within the border currently going around the pfp." One bordered card now holds
+   everything: the v1 sunset banner (public/images/Banner.png, same asset v1's own .banner uses)
+   fills it edge to edge as a background-image, a bigger pfp sits on the left with its own inner
+   border, and the skill chips -- already opaque/dark (.cx-skill-chip's own var(--cx-card)
+   background), so they read clearly over a bright photo with no extra styling needed -- float on
+   top of the photo to the right, filling the width the narrower pfp-only layout didn't use. */
+.cx-hero-card { position: relative; display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  padding: 22px; margin-bottom: 4px; border-radius: 16px; overflow: hidden;
+  border: 3px solid var(--cx-accent2);
+  background-image: url('/images/Banner.png'); background-size: cover; background-position: center;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--cx-accent2) 40%, transparent), 0 6px 20px rgba(0,0,0,.35); }
-.cx-hero-skills { flex: 1; min-width: 240px; }
+.cx-hero-pfp { display: block; width: 260px; height: 260px; border-radius: 12px; flex: none;
+  object-fit: cover; border: 3px solid rgba(255,247,239,.85);
+  box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+.cx-hero-skills { flex: 1; min-width: 260px; }
 
 /* ---------- About prose ---------- */
 .cx-prose p { max-width: 74ch; line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); }
@@ -373,7 +442,15 @@
    alongside it instead of living on its own route -- both v2 nav links land on this same page
    now (see pages/Portfolio/Portfolio.jsx). Reuses .cx-pf-cards (the 2-col card grid) from the old
    standalone Portfolio layout below. */
-.cx-home-grid { display: grid; grid-template-columns: minmax(0, 760px) 1fr; gap: 40px; align-items: start; }
+/* Ratio changed 2fr/1fr (was a 760px-capped left column against a wide-open 1fr right column,
+   which put the cards at roughly half the page) 2026-08-28, eighth pass -- Tyler: "The portfolio
+   cards section should only take up a third of the width of the viewport, not half as it
+   currently sits. Let the text widen out on the left to fill this new space." 2fr/1fr divides the
+   grid's own width exactly 2:1, i.e. the cards column is exactly a third of .cx-home-grid's width
+   regardless of viewport (minus the fixed 40px gap). .cx-prose p already caps individual lines at
+   74ch, so the now-wider left column doesn't hurt readability -- it just gives the prose more
+   breathing room and lets the hero card stretch further, not longer text lines. */
+.cx-home-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: start; }
 .cx-home-cards-head { text-align: right; margin-bottom: 4px; }
 .cx-home-cards-head button { position: static; }
 
