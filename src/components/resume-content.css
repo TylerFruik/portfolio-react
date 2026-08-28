@@ -1,0 +1,137 @@
+/* Rendered resume styling (2026-08-28). Self-contained "paper" card so the resume reads correctly
+   whether it sits inside v1's light/brown theme or v2's dark Coherence theme -- deliberately does
+   NOT inherit page colors, the same way a PDF wouldn't. Replaces the old embedded PDF iframe. */
+
+/* v1's global stylesheet has "* { color: var(--text) }" (a near-white cream, meant for its dark
+   theme) which sets color directly on every descendant element, not just an inherited value on
+   .rc-paper -- so without this catch-all, list items, job titles, and bullets rendered invisible
+   (cream text on the resume's white paper). This rule matches that selector's specificity and
+   wins on source order; the more specific color rules further down (dates, links) still win over it. */
+.rc-paper, .rc-paper * {
+  color: #26262a;
+}
+
+.rc-paper {
+  background: #fbfaf7;
+  color: #26262a;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 48px 48px;
+  border-radius: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  /* v1's .resume wrapper sets text-align: center for its old iframe layout; override explicitly
+     so resume text reads left-aligned like an actual resume, in both v1 and v2. */
+  text-align: left;
+}
+
+.rc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  border-bottom: 2px solid #26262a;
+  padding-bottom: 8px;
+}
+
+.rc-head h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.3px;
+}
+
+.rc-head-right {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+}
+
+.rc-head-right a {
+  color: #4a4470;
+  text-decoration: none;
+}
+.rc-head-right a:hover { text-decoration: underline; }
+
+.rc-head-sub {
+  display: flex;
+  gap: 18px;
+  font-size: 12.5px;
+  color: #5a5a62;
+  margin: 6px 0 18px;
+}
+
+.rc-summary {
+  font-size: 13.5px;
+  color: #3a3a40;
+  margin: 0 0 22px;
+}
+
+.rc-paper h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #26262a;
+  border-bottom: 1px solid #cfccc2;
+  margin: 22px 0 10px;
+  padding-bottom: 4px;
+}
+
+.rc-skills {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  font-size: 13px;
+}
+.rc-skills li { margin: 0 0 6px; }
+.rc-skills strong { color: #26262a; }
+
+.rc-job { margin-bottom: 14px; }
+
+.rc-job-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 4px;
+}
+
+.rc-job-title {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.rc-job-title em { font-style: normal; color: #5a5a62; font-weight: 400; }
+
+.rc-job-dates {
+  font-size: 12px;
+  color: #7a7a80;
+  white-space: nowrap;
+}
+
+.rc-job ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12.8px;
+  color: #3a3a40;
+}
+.rc-job li { margin-bottom: 4px; }
+
+.rc-download {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 12.5px;
+  color: #4a4470;
+  text-decoration: none;
+  border: 1px solid #cfccc2;
+  border-radius: 5px;
+  padding: 7px 14px;
+}
+.rc-download:hover { background: #f0eee8; }
+
+@media (max-width: 640px) {
+  .rc-paper { padding: 26px 20px 32px; }
+  .rc-head h1 { font-size: 21px; }
+}

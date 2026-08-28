@@ -1,1 +1,9 @@
+# Proxy redirects for the two storefronts -- URL bar stays on this portfolio domain while the
+# actual page is served from each storefront's own separate Netlify site/repo. Documented in both
+# storefronts' own READMEs (2026-08-22) but never actually added here until now (2026-08-28).
+# Must come before the SPA catch-all below -- Netlify _redirects matches top-down, first hit wins.
+/photography/*    https://photography-storefront.netlify.app/:splat    200!
+/3d-printing/*    https://3d-printing-storefront.netlify.app/:splat    200!
+
+# SPA fallback -- client-side React Router routes 404 on direct load/refresh without this.
 /*    /index.html   200

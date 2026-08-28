@@ -1,71 +1,43 @@
 import React, { useState } from 'react';
+import { useCoherenceTheme } from '../../coherence/CoherenceThemeContext';
+import CoherencePortfolio from '../../coherence/CoherencePortfolio';
+import { PROJECTS } from '../../content/projects';
 
-// Portfolio project data. Add a new project by appending one object here -- the grid re-flows
-// automatically (styles.css's .project-grid), no row/column math to redo. (2026-08-20 refactor,
-// replacing the old layout where every project was hand-written twice -- once in the "deployed"
-// view's JSX, once in the "repo" view's -- across two fixed-width rows sized for exactly 9 tiles.
-// Adding, removing, or reordering a project used to mean editing four separate places; now it's
-// one array entry.)
-//
-// Shape of each entry:
-//   id        — stable key. Also the image filename when image is true: public/images/<id>.png
-//   title     — display name. Wraps naturally inside the tile; no manual line breaks needed.
-//   image     — true if public/images/<id>.png exists. Omit/false to render a text-only tile
-//               (.no-image in styles.css) -- for adding a project before its screenshot is ready.
-//   deployed  — live URL (site, GitHub Pages, etc.), or null if there isn't one.
-//   repo      — GitHub repo URL, or null if there isn't one.
-//   featured  — true for the one large lead tile. Optional, defaults to false/small.
-const PROJECTS = [
-  { id: 'loveStruck', title: 'Love Struck', image: true,
-    deployed: 'https://lovestruck.onrender.com/', repo: 'https://github.com/devinshade/lovestruck', featured: true },
-  { id: 'giftPot', title: 'Gift Pot', image: true,
-    deployed: 'https://giftpot-d834bfa62933.herokuapp.com/', repo: 'https://github.com/TylerFruik/GiftPot' },
-  { id: 'lilChefs', title: "Lil' Chefs", image: true,
-    deployed: 'https://tylerfruik.github.io/lil-chefs/', repo: 'https://github.com/TylerFruik/lil-chefs' },
-  { id: 'passwordGenerator', title: 'Password Generator', image: true,
-    deployed: 'https://tylerfruik.github.io/Password-Generator/', repo: 'https://github.com/TylerFruik/Password-Generator' },
-  { id: 'workdayScheduler', title: 'Workday Scheduler', image: true,
-    deployed: 'https://tylerfruik.github.io/Work-Day-Scheduler/', repo: 'https://github.com/TylerFruik/Work-Day-Scheduler' },
-  { id: 'socialNetworkBackendAPI', title: 'Social Network Backend API', image: true,
-    deployed: null, repo: 'https://github.com/TylerFruik/Social-Network-API' },
-  { id: 'logoMaker', title: 'Logo Maker', image: true,
-    deployed: null, repo: 'https://github.com/TylerFruik/Logo-Generator' },
-  { id: 'frontendQuiz', title: 'Frontend Quiz', image: true,
-    deployed: 'https://tylerfruik.github.io/Frontend-Quiz/', repo: 'https://github.com/TylerFruik/Frontend-Quiz' },
-  { id: 'noteTaker', title: 'Note Taker', image: true,
-    deployed: 'https://w11notetaker-364489c73d7e.herokuapp.com/', repo: 'https://github.com/TylerFruik/Note-Taking-App' },
-  // SDET Interview Prep (2026-08-20): link-only per Tyler -- the practice app itself lives in the
-  // Coherence vault, not this repo. Just its GitHub Pages deployment + source repo. No screenshot
-  // yet, so it renders as a text-only tile (image: false) until one's added.
-  { id: 'sdetPractice', title: 'SDET Interview Prep', image: false,
-    deployed: 'https://tylerfruik.github.io/sdet-practice/', repo: 'https://github.com/TylerFruik/sdet-practice' },
-  // Photography & 3D Printing storefronts (2026-08-22): groundwork/placeholder sites, built and
-  // deployed same day. No screenshots yet (content itself is still placeholder-marked), so both
-  // render as text-only tiles until real photos/prints exist to show.
-  { id: 'photographyStorefront', title: 'Photography Storefront', image: false,
-    deployed: 'https://photography-storefront.netlify.app/', repo: 'https://github.com/TylerFruik/photography-storefront' },
-  { id: 'printingStorefront', title: '3D Printing Storefront', image: false,
-    deployed: 'https://3d-printing-storefront.netlify.app/', repo: 'https://github.com/TylerFruik/3d-printing-storefront' },
-  // Claude Usage HUD demo (2026-08-22): a small widget from my personal Coherence dashboard --
-  // vertical edge bars that fill/color by usage band. Lives as a static page in this repo's own
-  // public/demos/usage-hud/ (no separate repo -- it's one self-contained HTML file, not a project
-  // of its own), so `repo` points at that folder on GitHub instead of a dedicated repo. The real
-  // version reads my own usage privately; this one runs a looping simulation, no personal data.
-  { id: 'usageHud', title: 'Claude Usage HUD (demo)', image: false,
-    deployed: '/demos/usage-hud/index.html',
-    repo: 'https://github.com/TylerFruik/portfolio-react/tree/main/public/demos/usage-hud' },
-  // Add new projects here.
-];
+// Pointer-tilt handler (2026-08-28) -- same --rx/--ry formula as Coherence's own hue.js
+// (wireCardClickAndTilt()): mouse position inside the tile maps to +/-8deg rotateX/rotateY.
+// Mouse-only (checks pointerType), matching Coherence's own gate -- touch devices just don't
+// fire pointermove ambiently, so there's nothing for this to do there anyway.
+function handleTileTilt(e) {
+  if (e.pointerType && e.pointerType !== 'mouse') return;
+  const card = e.currentTarget;
+  const r = card.getBoundingClientRect();
+  const px = ((e.clientX - r.left) / (r.width || 1)) * 100;
+  const py = ((e.clientY - r.top) / (r.height || 1)) * 100;
+  card.style.setProperty('--ry', ((px - 50) / 50 * 8) + 'deg');
+  card.style.setProperty('--rx', (-(py - 50) / 50 * 8) + 'deg');
+}
+function resetTileTilt(e) {
+  if (e.pointerType && e.pointerType !== 'mouse') return;
+  const card = e.currentTarget;
+  card.style.setProperty('--rx', '0deg');
+  card.style.setProperty('--ry', '0deg');
+}
+
+// Portfolio project data now lives in ../../content/projects.js (2026-08-28 extraction) -- shared
+// by this v1 page and coherence/CoherencePortfolio.jsx so both read one list instead of two.
 
 const titleDeployed = 'Deployed Websites';
 const titleRepos = 'GitHub Repos';
 
 const Portfolio = () => {
 
+  const { v2 } = useCoherenceTheme();
   const [showRepoLinks, setShowRepoLinks] = useState(false);
   const toggleDisplay = () => {
     setShowRepoLinks(prevState => !prevState);
   }
+
+  if (v2) return <CoherencePortfolio />;
 
   return (
     <div className='full-page'>
@@ -87,7 +59,7 @@ const Portfolio = () => {
             </button>
           </div>
           <div className='project-grid'>
-            {PROJECTS.map(p => {
+            {PROJECTS.filter(p => p.tier !== 'coursework').map(p => {
               // Falls back to whichever link actually exists, so a project with no deployed site
               // (or, in principle, no repo) is never a dead link in either view -- previously
               // socialNetworkBackendAPI/logoMaker pointed at href={null} in the deployed view.
@@ -95,7 +67,32 @@ const Portfolio = () => {
               if (!href) return null;
               const tileClass = 'project-tile' + (p.featured ? ' featured' : '') + (p.image ? '' : ' no-image');
               return (
-                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer">
+                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer"
+                  onPointerMove={handleTileTilt} onPointerLeave={resetTileTilt}>
+                  {p.image && <img src={`images/${p.id}.png`} alt={`Screenshot of ${p.title}, a project by Tyler Fruik`} />}
+                  <h4>{p.title}</h4>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Coursework tier (2026-08-28): bootcamp weekly-challenge projects, split off into
+              their own secondary section so the main grid above leads with the stronger/more
+              substantial builds -- Tyler's call once he had real professional experience to
+              lead with instead. Same tile styling/tilt, just a lower-emphasis heading. */}
+          <div className='portfolio-header' style={{ marginTop: '32px' }}>
+            <div>
+              <h3>Bootcamp Coursework</h3>
+            </div>
+          </div>
+          <div className='project-grid'>
+            {PROJECTS.filter(p => p.tier === 'coursework').map(p => {
+              const href = showRepoLinks ? (p.repo || p.deployed) : (p.deployed || p.repo);
+              if (!href) return null;
+              const tileClass = 'project-tile' + (p.image ? '' : ' no-image');
+              return (
+                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer"
+                  onPointerMove={handleTileTilt} onPointerLeave={resetTileTilt}>
                   {p.image && <img src={`images/${p.id}.png`} alt={`Screenshot of ${p.title}, a project by Tyler Fruik`} />}
                   <h4>{p.title}</h4>
                 </a>

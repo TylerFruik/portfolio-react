@@ -1,0 +1,390 @@
+/* Coherence v2 theme (2026-08-28) -- portfolio redesign built from the real Coherence dashboard's
+   own design system (D:\Coherence\Coherence Project\Coherence\_System\dashboard\dashboard.css),
+   ported rather than reinvented: same color tokens, the real .hue-card trading-card shape + tilt,
+   the Marvel-Snap-style Skills card 3D pop, the THC Token Night rainbow-border + starburst effect,
+   and the COHERENCE wordmark's per-letter hue-cycling animation, now spelling TYLER FRUIK.
+   Everything here is scoped under .coherence-v2 (set on a wrapper div, see App.jsx) so none of it
+   touches the v1 design when the toggle is off -- cx- prefix on every class keeps it from ever
+   colliding with styles.css's own names either. */
+
+/* Palette overhaul (2026-08-28, Tyler: "use the color palette from the original portfolio for
+   the global defaults. The only times I want Coherence colors is on Coherence specific things" --
+   named as Coherence, SDET Interview Prep, Photography Storefront, 3D Printing Storefront, and
+   Claude Usage HUD (demo)). --cx-action/presence/intention/identity are KEPT, unchanged, and are
+   still real Coherence hues -- but from here on they're only read by CoherenceCard for that named
+   whitelist (see content/projects.js) and by the rainbow/starburst treatment on the Coherence card
+   itself. Everything else -- section markers, chips, bullets, the wordmark, the hero border --
+   now reads --cx-accent/--cx-accent2 instead (the wordmark got its four hues back into rotation
+   same day, plus two new portfolio-palette animations -- see below), which are the portfolio's own
+   --tertiary/--primary,
+   the exact hex values color-picked from Tyler's own PFP. bg/card/txt/dim/line are re-derived from
+   --secondary/--text so the v2 dark shell reads as the same visual family as v1, not a second,
+   unrelated theme living behind the same toggle. */
+.coherence-v2 {
+  --cx-bg: var(--secondary); --cx-card: #302529; --cx-card2: #382a2f; --cx-txt: var(--text);
+  --cx-dim: #cbb6ab; --cx-line: #453337; --cx-accent: var(--tertiary); --cx-accent2: var(--primary);
+  --cx-action: #e25555; --cx-presence: #4caf78; --cx-intention: #5b7ff6; --cx-identity: #9c6bd8;
+
+  background: var(--cx-bg);
+  color: var(--cx-txt);
+  font: 15px/1.55 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.coherence-v2 a { color: inherit; }
+
+/* ---------- Layout shell ---------- */
+/* max-width raised 1180 -> 1720 (2026-08-28, Tyler: "a lot of wasted space on the width of the
+   page") -- still capped so text/cards don't stretch to unreadable widths on an ultrawide
+   monitor, but a normal 1920 viewport now only has ~100px of breathing room per side instead of
+   ~370px. */
+.cx-page { padding: 20px clamp(16px, 3vw, 48px) 56px; max-width: 1720px; margin: 0 auto; }
+/* Narrower reading column for text-driven pages like About Me (2026-08-28 rewrite) -- the 1720px
+   page shell is right for the card grids, but a single column of prose/list content stretching
+   that wide reads worse, not better. */
+.cx-page-narrow { max-width: 860px; }
+.cx-header-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.cx-nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+/* Sticky top bar (2026-08-28, Tyler: "I want the header and breadcrumb to be pinned to the top of
+   the page"). CoherenceNav.jsx wraps its .cx-header-row in this instead of a plain .cx-page div --
+   full-bleed solid background + its own bottom border so scrolled content never shows through or
+   visually collides with the wordmark/nav row above it. */
+.cx-topbar { position: sticky; top: 0; z-index: 100; background: var(--cx-bg);
+  border-bottom: 1px solid var(--cx-line); }
+/* Right padding widened to clear the fixed top-right button cluster (Resume + theme toggle can run
+   ~210px wide together) -- without this, a narrower viewport lets that cluster sit directly over
+   the nav links since both the topbar and the buttons anchor to the same top-right corner. */
+.cx-topbar .cx-header-row { padding: 14px clamp(16px, 3vw, 48px);
+  padding-right: max(clamp(16px, 3vw, 48px), 220px); max-width: 1720px; margin: 0 auto; }
+.cx-nav a { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  letter-spacing: .04em; text-decoration: none; color: var(--cx-dim); border: 1px solid transparent;
+  transition: color .15s, border-color .15s, background .15s; }
+.cx-nav a:hover, .cx-nav a.cx-active { color: var(--cx-txt); border-color: var(--cx-line);
+  background: var(--cx-card); }
+
+/* ---------- Wordmark (TYLER FRUIK, ported from logo-anim.js / COHERENCE) ---------- */
+.cx-wordmark { display: inline-flex; font-size: 24px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; }
+.cx-letter { display: inline-block; color: #f2f4f8; white-space: pre;
+  transition: color .3s, text-shadow .3s; }
+
+/* Four real Coherence hues (2026-08-28: recolored to portfolio gold/orange earlier the same day,
+   then Tyler asked for them back -- "bring the 4 Coherence color animations back into rotation."
+   These are legitimately Tyler's own name's wordmark reusing Coherence's signature effect, same
+   as the breadcrumb always was; the palette restriction is about page CONTENT, not this one
+   ported flourish). Two more variants follow below: gold shine-swipe and burnt-orange campfire,
+   both new, both built from the portfolio's own two accent colors. */
+@keyframes cx-flash-action {
+  0%,100% { color:#f2f4f8; text-shadow:none; transform:scale(1); }
+  6% { color:var(--cx-action); text-shadow:0 0 10px var(--cx-action), 0 0 22px var(--cx-action); transform:scale(1.1); }
+  40% { color:var(--cx-action); text-shadow:0 0 10px var(--cx-action), 0 0 22px var(--cx-action); transform:scale(1.08); }
+  70% { color:var(--cx-action); text-shadow:0 0 8px var(--cx-action); transform:scale(1.04); }
+  100% { color:#f2f4f8; text-shadow:none; transform:scale(1); }
+}
+.cx-anim-action .cx-letter { animation: cx-flash-action 1.5s cubic-bezier(.2,.8,.3,1) both;
+  animation-delay: calc(var(--i) * 18ms); }
+
+@keyframes cx-arc-presence {
+  0% { color:#f2f4f8; text-shadow:none; }
+  50% { color:var(--cx-presence); text-shadow:0 -6px 16px var(--cx-presence), 0 0 14px var(--cx-presence); }
+  100% { color:#f2f4f8; text-shadow:none; }
+}
+.cx-anim-presence .cx-letter { animation: cx-arc-presence 1.8s ease-in-out both;
+  animation-delay: calc(var(--i) * .18s); }
+
+/* More pulses added 2026-08-28 (Tyler: "Intention doesn't look like it should") -- the original
+   only had two flashes before settling into a long flat hold, which didn't read as "stuttering
+   ignition" so much as a slow double-blink. Now flashes three times, each a bit stronger than the
+   last (a lighter genuinely catching), before it holds and fades. */
+@keyframes cx-flicker-intention {
+  0%,100% { color:#f2f4f8; text-shadow:none; }
+  8% { color:var(--cx-intention); text-shadow:0 -6px 10px var(--cx-intention), 0 0 6px var(--cx-intention); }
+  13% { color:#f2f4f8; text-shadow:none; }
+  20% { color:var(--cx-intention); text-shadow:0 -8px 14px var(--cx-intention), 0 0 10px var(--cx-intention); }
+  26% { color:#f2f4f8; text-shadow:none; }
+  34% { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); }
+  78% { color:var(--cx-intention); text-shadow:0 -10px 22px var(--cx-intention), 0 0 16px var(--cx-intention); }
+}
+.cx-anim-intention .cx-letter { animation: cx-flicker-intention 2.8s ease-in-out both;
+  animation-delay: calc(var(--i) * .09s); }
+
+/* Rebuilt 2026-08-28 (Tyler: "Identity doesn't look like it should") -- the old version was
+   literally cx-arc-presence recolored purple: one symmetric up/down glow, no actual wander to it.
+   Real wander needs at least two peaks so the glow visibly drifts rather than just breathing once;
+   staggered further by --i so letters don't peak in lockstep, reading as a glow ambling down the
+   word instead of a single wave passing through it. */
+@keyframes cx-wander-identity {
+  0%,100% { color:#f2f4f8; text-shadow:none; }
+  22% { color:var(--cx-identity); text-shadow:0 0 8px var(--cx-identity), 0 0 14px var(--cx-identity); }
+  38% { color:#f2f4f8; text-shadow:none; }
+  60% { color:var(--cx-identity); text-shadow:0 0 16px var(--cx-identity), 0 0 28px var(--cx-identity); }
+  80% { color:var(--cx-identity); text-shadow:0 0 10px var(--cx-identity), 0 0 18px var(--cx-identity); }
+}
+.cx-anim-identity .cx-letter { animation: cx-wander-identity 3.2s ease-in-out both;
+  animation-delay: calc(var(--i) * .16s); }
+
+/* Gold: slow fade-in to a shining glow, then a silver/white flash sweeps across the whole word
+   (2026-08-28, Tyler: "a real shhing! feel to it"). Two separate animations layered on two
+   different elements achieve it: each letter fades from Coherence White up to a glowing gold
+   (staggered by --i, so it reads as a cascade), then a shine sweeps across on top of it once the
+   fade's done.
+   Rebuilt 2026-08-28 (Tyler: "the shimmer bar... should only display on the text but is instead a
+   full bar and is very off center") -- the old ::after was a plain content:'' rectangle with a
+   gradient background, so it painted a literal bar over the wordmark's whole box regardless of
+   where the letters actually were, and its translateX() percentages were relative to the bar's
+   OWN width (26% of the word) rather than the word's full width, so the travel distance didn't
+   line up with the text either. Fixed with the standard CSS text-shine technique instead: the
+   ::after's content IS the word itself (content: attr(data-text), see the data-text attribute
+   CoherenceWordmark.jsx now sets), clipped to the glyph shapes with background-clip: text, so the
+   bright band can only ever render where the letters actually are -- then the sweep animates
+   background-position across a wide (300%) gradient instead of translating a separate shape. */
+@keyframes cx-gold-fade {
+  0% { color:#f2f4f8; text-shadow:none; }
+  100% { color:var(--cx-accent); text-shadow:0 0 10px var(--cx-accent), 0 0 22px var(--cx-accent); }
+}
+.cx-anim-gold .cx-letter { animation: cx-gold-fade .9s ease-out both;
+  animation-delay: calc(var(--i) * 45ms); }
+@keyframes cx-gold-shine-sweep {
+  0% { background-position: 200% 0; opacity: 0; }
+  8% { opacity: .95; }
+  55% { opacity: .95; }
+  70% { opacity: 0; }
+  100% { background-position: -100% 0; opacity: 0; }
+}
+.cx-anim-gold { position: relative; }
+.cx-anim-gold::after { content: attr(data-text); position: absolute; inset: 0; white-space: pre;
+  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,.9) 48%, #fff 50%, rgba(255,255,255,.9) 52%, transparent 65%);
+  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  pointer-events: none;
+  animation: cx-gold-shine-sweep 1.15s ease-in-out .85s both; }
+
+/* Burnt orange: a campfire flicker, each letter licking up from the bottom a little differently
+   (2026-08-28, Tyler: "warm campfire feel"). --j (set per-letter in CoherenceWordmark.jsx, 0-4) is
+   what actually makes each letter's timing feel organic rather than a uniform wave -- CSS calc()
+   has no modulo operator to derive that variance from --i alone. */
+@keyframes cx-campfire-flicker {
+  0%,100% { color:#f2f4f8; text-shadow:none; transform:translateY(0); }
+  12% { color:#e8531f; text-shadow:0 0 6px #e8531f, 0 -3px 8px #c8431a; transform:translateY(-1px); }
+  27% { color:#ffb347; text-shadow:0 0 12px #ffb347, 0 -6px 16px #ff7a1a; transform:translateY(-2px); }
+  41% { color:#ff9a3c; text-shadow:0 0 7px #ff9a3c; transform:translateY(0); }
+  56% { color:#ffcf6b; text-shadow:0 0 14px #ffcf6b, 0 -5px 14px #ff6a1a; transform:translateY(-1.5px); }
+  73% { color:#c8431a; text-shadow:0 0 5px #c8431a; transform:translateY(0); }
+  88% { color:#ff9a3c; text-shadow:0 0 8px #ff9a3c; transform:translateY(-1px); }
+}
+.cx-anim-burnt .cx-letter { animation: cx-campfire-flicker 2.1s ease-in-out both;
+  animation-delay: calc(var(--i) * 65ms);
+  animation-duration: calc(1.9s + var(--j) * .15s); }
+
+/* ---------- Toggle (fixed top-right, visible in both v1 and v2) ---------- */
+/* Fixed top-right wrapper (2026-08-28) holding the Resume button and the theme toggle side by
+   side -- both used to be independently position:fixed; now the WRAPPER is fixed and they're
+   plain flex children, so adding a second button never means recalculating anyone's offset.
+   Hardcoded hex throughout this whole block, not var(--cx-*): both children render in v1 too,
+   where .coherence-v2's custom properties don't exist. */
+.cx-top-actions { position: fixed; top: 14px; right: 14px; z-index: 9999;
+  display: flex; align-items: center; gap: 10px; }
+.cx-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+  background: #181b22; border: 1px solid #2a2f3a; color: #d6dae3; font-size: 12.5px; font-weight: 600;
+  letter-spacing: .05em; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.35);
+  transition: border-color .15s, transform .15s; }
+.cx-toggle:hover { border-color: #e8b84b; transform: translateY(-1px); }
+/* Kept as the one true 4-hue rainbow outside the whitelist (2026-08-28 palette pass) -- this dot
+   sits on the button that switches TO the Coherence-styled view, so it functions as that view's
+   own icon rather than as page chrome. Flag this one if it should go gold/orange too. */
+.cx-toggle .cx-toggle-dot { width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: conic-gradient(#e25555, #4caf78, #5b7ff6, #9c6bd8, #e25555);
+  box-shadow: 0 0 8px rgba(255,255,255,.4); }
+.cx-resume-btn { padding: 8px 16px; border-radius: 999px; background: #181b22; border: 1px solid #e8b84b;
+  color: #e8b84b; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.35); transition: background .15s, transform .15s; }
+.cx-resume-btn:hover { background: #2a2118; transform: translateY(-1px); }
+
+/* ---------- Coherence Card (ported from .hue-card) ---------- */
+/* Landscape notecard reshape (2026-08-28, Tyler: "more like landscape orientation note cards in
+   size and aspect ratio. That way the screenshots have more space to render"). Was a 240x336
+   portrait 5:7 "trading card" -- now a wider, shorter 4:3 landscape tile, sized down (220px vs
+   240px) and with a tighter gap so more fit on screen at once per Tyler's "I always love the
+   feeling of seeing an entire page on one screen" -- without going so small the screenshots
+   inside stop being legible. */
+.cx-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; margin-top: 8px; }
+.cx-hue-card { width: 100%; max-width: 260px; aspect-ratio: 4/3; box-sizing: border-box;
+  background: var(--cx-card); border: 1px solid var(--cx-line); border-left: 4px solid var(--c);
+  border-radius: 10px; padding: 12px 14px; cursor: pointer; text-decoration: none; color: inherit;
+  --rx: 0deg; --ry: 0deg;
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .2s ease-out, box-shadow .08s, border-color .08s;
+  will-change: transform; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.cx-hue-card:hover, .cx-hue-card:focus-visible { border-color: var(--c);
+  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-2px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--c) 25%, rgba(0,0,0,.4)); outline: none; }
+.cx-hc-top { margin-bottom: 8px; flex: none; }
+/* Title in "Coherence White" (2026-08-28, Tyler's own term for it) -- #f2f4f8, the exact base
+   color the real logo-letter wordmark rests at (dashboard.css), not the slightly dimmer var(--cx-txt)
+   body-copy color every other card used before. */
+.cx-hc-name { font-size: 14px; font-weight: 700; line-height: 1.25; color: #f2f4f8;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cx-hc-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.cx-hc-img { width: 100%; border-radius: 6px; object-fit: cover; object-position: top;
+  flex: 1; min-height: 0; }
+.cx-hc-placeholder { flex: 1; border-radius: 6px; min-height: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c) 22%, var(--cx-card2)), var(--cx-card2));
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 10.5px; color: var(--cx-dim); padding: 8px; }
+.cx-hc-subtitle { font-size: 11px; color: var(--cx-dim); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Bottom skill-tag chip (2026-08-28, Tyler: "little entries across the bottoms of the notecards
+   that highlight the most important skill being showcased there"). One per card, individually
+   curated in content/projects.js so no two repeat. */
+.cx-hc-tag { flex: none; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--cx-line);
+  display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--c); position: relative; z-index: 1; }
+.cx-hc-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Static Rainbow Border + 16-beam starburst -- ported verbatim from Maxing's THC Token Night card. */
+.cx-rainbow { border-width: 2px; border-color: transparent;
+  background: linear-gradient(var(--cx-card), var(--cx-card)) padding-box,
+    conic-gradient(var(--cx-action), var(--cx-presence), var(--cx-intention), var(--cx-identity), var(--cx-action)) border-box; }
+.cx-thc-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.cx-rainbow .cx-hc-top, .cx-rainbow .cx-hc-body { position: relative; z-index: 1; }
+.cx-tf16-wrap { position: absolute; top: 50%; left: 50%; width: 0; height: 0; }
+.cx-tf16-beam { position: absolute; top: 0; left: 0; width: 130px; height: 2.5px; transform-origin: 0 50%;
+  opacity: .6; filter: blur(.5px); }
+@keyframes cx-tf16-sweep { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes cx-pulse-action { 0%,100% { opacity:.5; } 8% { opacity:1; } 16% { opacity:.7; } 22% { opacity:1; } 30% { opacity:.5; } }
+@keyframes cx-sweep-presence { 0%,100% { opacity:.35; } 50% { opacity:.9; } }
+@keyframes cx-flicker-i { 0%,100% { opacity:.25; } 4% { opacity:.9; } 7% { opacity:.2; } 11% { opacity:.95; } 16% { opacity:.3; } 24% { opacity:1; } 70% { opacity:1; } 85% { opacity:.3; } }
+@keyframes cx-wander-i { 0%,100% { opacity:.5; } 25% { opacity:.85; } 50% { opacity:.6; } 75% { opacity:.9; } }
+.cx-tf16-beam.cx-h-action { background: linear-gradient(90deg, var(--cx-action), transparent);
+  animation: cx-pulse-action 1.7s ease-in-out infinite, cx-tf16-sweep 2.6s ease-in-out infinite; }
+.cx-tf16-beam.cx-h-presence { background: linear-gradient(90deg, var(--cx-presence), transparent);
+  animation: cx-sweep-presence 4.2s ease-in-out infinite, cx-tf16-sweep 3.4s ease-in-out infinite; }
+.cx-tf16-beam.cx-h-intention { background: linear-gradient(90deg, var(--cx-intention), transparent);
+  animation: cx-flicker-i 3.3s ease-in-out infinite, cx-tf16-sweep 2.9s ease-in-out infinite; }
+.cx-tf16-beam.cx-h-identity { background: linear-gradient(90deg, var(--cx-identity), transparent);
+  animation: cx-wander-i 5.6s ease-in-out infinite, cx-tf16-sweep 3.9s ease-in-out infinite; }
+
+/* Let the starburst show through a rainbow card's placeholder art instead of being fully hidden
+   behind it -- opaque placeholder fills the whole card body, which otherwise buries the beams. */
+.cx-rainbow .cx-hc-placeholder { background: color-mix(in srgb, var(--cx-card2) 55%, transparent); }
+
+/* ---------- Skill chip (2026-08-28, fourth pass -- reverted from the 2-col card grid) ----------
+   Tyler: "I liked the skill cards the way they looked before, I just wanted them up next to my
+   pfp sharing the space." Back to the quiet flex-wrap chip row (logo left, name right) -- the
+   card-grid shape wasn't the ask, the position was. */
+.cx-skill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.cx-skill-chip { display: flex; align-items: center; gap: 8px; background: var(--cx-card);
+  border: 1px solid var(--cx-line); border-radius: 8px; padding: 6px 12px 6px 6px; }
+.cx-skill-logo { width: 24px; height: 24px; border-radius: 6px; flex: none; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--cx-accent) 16%, var(--cx-card2)); }
+.cx-skill-logo img { width: 100%; height: 100%; object-fit: contain; }
+.cx-skill-fallback { font-size: 10px; font-weight: 700; color: var(--cx-accent); letter-spacing: .02em; }
+.cx-skill-name { font-size: 13px; font-weight: 600; color: var(--cx-txt); }
+
+/* ---------- Sections ---------- */
+/* 44px -> 32px (2026-08-28, Tyler: "I always love the feeling of seeing an entire page on one
+   screen" -- part of the same density pass as the landscape card reshape below). */
+.cx-section { margin: 32px 0; }
+.cx-section-title { display: flex; align-items: center; gap: 10px; font-size: 13px;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--cx-dim); margin-bottom: 14px; }
+.cx-section-title .cx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--cx-accent));
+  box-shadow: 0 0 8px var(--c, var(--cx-accent)); flex: none; }
+
+/* ---------- Hero row: photo + Skills sharing space (2026-08-28, fourth pass) ----------
+   Tyler, correcting the third pass: "I liked the skill cards the way they looked before, I just
+   wanted them up next to my pfp sharing the space, but still wanted the About Me section rendered
+   below it as it was." So: Skills reverts to the flex-wrap chip row (not the 2-col card grid),
+   just relocated beside the photo instead of living in its own section further down. Everything
+   below it -- About, Get to Know a Dev, Creative Hobbies -- goes back to left-aligned in a single
+   narrow column, undoing the center-justify pass (that instruction was actually meant for the
+   Portfolio route, not this page -- see CoherencePortfolio's own layout notes). */
+.cx-hero { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 4px; }
+.cx-hero-photo { display: block; width: 176px; height: 176px; border-radius: 16px; flex: none;
+  object-fit: cover; border: 3px solid var(--cx-accent2);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cx-accent2) 40%, transparent), 0 6px 20px rgba(0,0,0,.35); }
+.cx-hero-skills { flex: 1; min-width: 240px; }
+
+/* ---------- About prose ---------- */
+.cx-prose p { max-width: 74ch; line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); }
+/* Hue-colored underline on the FIRST bold/strong bit of emphasis Tyler asked for more color
+   throughout (2026-08-28: "Use the Coherence Colors more often... to designate divs, sections,
+   bullet points, underlines"). Kept to section-scoped accents rather than painting every
+   paragraph, so it reads as deliberate structure, not random highlighting. */
+.cx-prose p:first-child::first-line { }
+.cx-hue-underline { text-decoration: underline; text-decoration-color: var(--c); text-decoration-thickness: 2px;
+  text-underline-offset: 3px; }
+
+/* ---------- Get to Know a Dev: distinct question headers ---------- */
+/* Reverted 2026-08-28 (fourth pass) back to the left-border "pull-quote" style from the second
+   pass -- the centered version only ever made sense paired with the centered-column experiment,
+   which itself got reverted the same round. Colored left border, alternating gold/orange, bold
+   heading with a small dot. */
+.cx-qa-item { margin-bottom: 24px; padding-left: 16px; border-left: 3px solid var(--c); }
+.cx-qa-head { display: flex; align-items: center; gap: 8px; color: var(--cx-txt);
+  font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
+.cx-qa-head .cx-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* ---------- Creative hobbies ---------- */
+/* Reverted to the left-aligned wrapping grid, bullet pinned to each item's own left edge. */
+.cx-hobby-list { list-style: none; margin: 0; padding: 0; display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 20px; }
+.cx-hobby-list li { padding-left: 18px; position: relative; line-height: 1.5; color: var(--cx-txt); font-size: 14px; }
+.cx-hobby-list li::before { content: ''; position: absolute; left: 0; top: 8px; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--cx-accent); box-shadow: 0 0 6px var(--cx-accent); }
+
+/* ---------- Portfolio page: right-justified label column + 2-col card column ----------
+   Built 2026-08-28, real implementation of the wireframe shown and approved first. Tyler's own
+   correction on the ask: "I was asking for the entire contents of the Portfolio page, the cards,
+   THOSE to be on the column on the right of the screen. And I meant specifically Right Justified."
+   grid-template-areas keeps each section's label pinned to the TOP of that section's own card row
+   regardless of how many cards wrap onto extra rows as the viewport narrows -- no manual margin-top
+   guesswork tying label position to card count. */
+.cx-portfolio-grid { display: grid; grid-template-columns: minmax(160px, 220px) 1fr;
+  grid-template-areas: "header  ." "feat feat-cards" "proj proj-cards" "boot boot-cards";
+  column-gap: 32px; row-gap: 28px; align-items: start; }
+.cx-pf-header { grid-area: header; display: flex; flex-direction: column; align-items: flex-end;
+  text-align: right; }
+.cx-pf-header button { align-self: flex-end; }
+/* Section label reuses .cx-section-title's look but flips the dot to the right side (justify-
+   content: flex-end) and right-aligns the text itself, so it reads correctly sitting in a
+   right-justified column instead of a full-width row. */
+.cx-pf-label { justify-content: flex-end; text-align: right; margin-bottom: 0; }
+.cx-pf-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cx-pf-cards .cx-hue-card { max-width: none; }
+
+@media (max-width: 760px) {
+  .cx-portfolio-grid { grid-template-columns: 1fr;
+    grid-template-areas: "header" "feat" "feat-cards" "proj" "proj-cards" "boot" "boot-cards"; }
+  .cx-pf-header { align-items: flex-start; text-align: left; }
+  .cx-pf-header button { align-self: flex-start; }
+  .cx-pf-label { justify-content: flex-start; text-align: left; }
+  .cx-pf-cards { grid-template-columns: 1fr; }
+}
+
+/* ---------- Footer ---------- */
+/* height/background explicitly reset here -- styles.css has an UNSCOPED bare `footer { height:4px;
+   background:var(--tertiary) }` rule (a v1 decorative divider) that otherwise bleeds onto this
+   element too, since this is a real <footer> tag underneath (see CoherenceFoot.jsx). Found live
+   2026-08-28 as Tyler's "footer is broken" report -- a solid gold bar sitting over the footer
+   links. Every bare HTML tag this v2 theme reuses (footer/header/a/body) needs to be checked
+   against styles.css's own global rules the same way; this is the one that actually collided. */
+.cx-foot { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center;
+  height: auto; background: none;
+  padding: 32px 0 8px; border-top: 1px solid var(--cx-line); margin-top: 48px; }
+/* Icons restored 2026-08-28 (Tyler: "Bring back the exact ones from the Portfolio v1") -- same
+   five pre-made gold PNGs (public/images/*Gold.png) v1's Foot.jsx uses, just laid out as a
+   column-per-item to match this footer's plainer row instead of v1's own bootstrap-flavored nav. */
+.cx-foot-item { display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: none; border: none; color: var(--cx-dim); font: inherit;
+  font-size: 12.5px; font-weight: 600; cursor: pointer; text-decoration: none; }
+.cx-foot-item img { width: 32px; height: 32px; object-fit: contain; }
+.cx-foot-item:hover { color: var(--cx-accent); }
+
+/* Resume page now renders via components/ResumeContent.jsx + resume-content.css (self-contained
+   "paper" styling), not an iframe -- see that file for its rules. */
+
+@media (max-width: 700px) {
+  .cx-page { padding-top: 60px; }
+}
