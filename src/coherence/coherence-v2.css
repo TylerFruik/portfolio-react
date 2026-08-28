@@ -241,8 +241,16 @@
    plain flex children, so adding a second button never means recalculating anyone's offset.
    Hardcoded hex throughout this whole block, not var(--cx-*): both children render in v1 too,
    where .coherence-v2's custom properties don't exist. */
+/* Box model rebuilt 2026-08-28, tenth pass -- Tyler: "I want the Resume button to be the exact
+   same size as the v1/v2 switch and have the same spacing. That way there's a nice symmetry to
+   the page." Mirrors .cx-view-switch/.cx-view-btn's own two-layer box exactly: this wrapper takes
+   over the switch's outer padding/radius/background (3px / 999px / #181b22), and .cx-resume-btn
+   below takes over the switch's inner button padding/font (6px 15px / 12px / 700 / .05em) --
+   same pixel dimensions, just recolored gold since it's a single CTA link, not a toggle pair. */
 .cx-top-actions { position: fixed; top: 14px; right: 14px; z-index: 9999;
-  display: flex; align-items: center; gap: 10px; }
+  display: flex; align-items: center; gap: 10px;
+  padding: 3px; border-radius: 999px; background: #181b22; border: 1px solid #e8b84b;
+  box-shadow: 0 4px 16px rgba(0,0,0,.35); }
 /* v1/v2 view switch -- ninth pass, 2026-08-28: moved to the LEFT of the wordmark, Tyler: "Put the
    v1/v2 button on the LEFT of the title, and do not move the title." Plain in-flow placement
    (eighth pass, right after the wordmark) would have pushed the wordmark's own box rightward the
@@ -272,10 +280,10 @@
 .cx-toggle .cx-toggle-dot { width: 8px; height: 8px; border-radius: 50%; flex: none;
   background: conic-gradient(#e25555, #4caf78, #5b7ff6, #9c6bd8, #e25555);
   box-shadow: 0 0 8px rgba(255,255,255,.4); }
-.cx-resume-btn { padding: 8px 16px; border-radius: 999px; background: #181b22; border: 1px solid #e8b84b;
-  color: #e8b84b; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,.35); transition: background .15s, transform .15s; }
-.cx-resume-btn:hover { background: #2a2118; transform: translateY(-1px); }
+.cx-resume-btn { padding: 6px 15px; border-radius: 999px; background: transparent; border: none;
+  color: #e8b84b; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-decoration: none;
+  transition: background .15s, transform .15s; }
+.cx-resume-btn:hover { background: rgba(232,184,75,.14); transform: translateY(-1px); }
 
 /* ---------- Coherence Card (ported from .hue-card) ---------- */
 /* Landscape notecard reshape (2026-08-28, Tyler: "more like landscape orientation note cards in
@@ -386,6 +394,10 @@
   letter-spacing: .18em; text-transform: uppercase; color: var(--cx-dim); margin-bottom: 14px; }
 .cx-section-title .cx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c, var(--cx-accent));
   box-shadow: 0 0 8px var(--c, var(--cx-accent)); flex: none; }
+/* Larger variant, left column only (2026-08-28, tenth pass -- Tyler: "Make the ABOUT, GET TO KNOW
+   A DEV, and CREATIVE HOBBIES titles larger"). Scoped to these three specifically, not the cards
+   column's Featured/Projects/Bootcamp Coursework labels, which Tyler didn't ask to change. */
+.cx-section-title-lg { font-size: 17px; letter-spacing: .14em; }
 
 /* ---------- Hero row: photo + Skills sharing space (2026-08-28, fourth pass) ----------
    Tyler, correcting the third pass: "I liked the skill cards the way they looked before, I just
@@ -419,7 +431,12 @@
    pass before this one, but the 74ch line-length cap didn't grow with it, so the actual text sat
    noticeably narrower than its own column, leaving open space between it and the cards column
    that had nothing to do with the grid math itself. */
-.cx-prose p { line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); }
+/* Full justify added 2026-08-28, tenth pass (Tyler: "Make the majority of the text fully
+   justified unless it's the final row") -- text-align:justify already leaves the LAST line of
+   each paragraph ragged/left-aligned by default (only fully-wrapped lines get stretched to fill
+   the width), which is exactly the "unless it's the final row" behavior asked for, with no extra
+   CSS needed for that part. */
+.cx-prose p { line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); text-align: justify; }
 /* Hue-colored underline on the FIRST bold/strong bit of emphasis Tyler asked for more color
    throughout (2026-08-28: "Use the Coherence Colors more often... to designate divs, sections,
    bullet points, underlines"). Kept to section-scoped accents rather than painting every
@@ -434,8 +451,9 @@
    which itself got reverted the same round. Colored left border, alternating gold/orange, bold
    heading with a small dot. */
 .cx-qa-item { margin-bottom: 24px; padding-left: 16px; border-left: 3px solid var(--c); }
+/* Larger 2026-08-28, tenth pass (Tyler: "make the questions a larger font size") -- 15.5px -> 19px. */
 .cx-qa-head { display: flex; align-items: center; gap: 8px; color: var(--cx-txt);
-  font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
+  font-size: 19px; font-weight: 700; margin-bottom: 8px; }
 .cx-qa-head .cx-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); flex: none; }
 
 /* ---------- Creative hobbies ---------- */
@@ -506,29 +524,27 @@
 }
 
 /* ---------- Side wave decoration (see CoherenceSideWaves.jsx) ---------- */
-/* Fixed to the true viewport edge, not .cx-page -- only ever visible in the empty gutter outside
-   the page's own 1720px-max-width centered content, never overlapping real content. Each rail is
-   a 240px x 100vh box; the SVG layers inside are rendered at the SWAPPED dimensions (100vh wide x
-   240 tall) and rotated 90deg, so after rotation they fill the rail exactly -- same trick as
-   rotating a landscape photo into a portrait frame. pointer-events:none so it's purely decorative
-   and never intercepts clicks even where it happens to sit under narrower-viewport content. */
-/* Hidden below 2200px (2026-08-28 fix, same day) rather than fought over with z-index -- a
-   negative z-index here landed BELOW the page's own root background for reasons not worth
-   chasing further (some ancestor stacking context, likely from the dev tooling shell), while any
-   zero-or-higher z-index paints above plain static content and would visibly sit over the hero
-   card/text/cards on any viewport where the two actually overlap. A width gate sidesteps the
-   whole stacking question: 1720px page max-width + 2 * 240px rail width = 2200px is the exact
-   viewport width where the rails first fit entirely within the real empty gutter with zero
-   overlap possible, so it's simply not rendered at all below that, and needs no special z-index
-   above it since nothing else occupies that space at that width anyway. */
-.cx-side-wave-rail { display: none; position: fixed; top: 0; width: 240px; height: 100vh;
-  overflow: hidden; pointer-events: none; }
-@media (min-width: 2200px) {
-  .cx-side-wave-rail { display: block; }
-}
+/* Reworked 2026-08-28, tenth pass -- Tyler: "I don't see the waves... it seems like it's already
+   on the outside edge, just do a Horizontal Flip so they fit within the page." The ninth-pass
+   version lived in the viewport's dead space outside .cx-page's own 1720px column (only nonzero
+   above 2200px), which is why it never showed up for Tyler. Fixed by giving the frame the exact
+   same max-width:1720px + margin:0 auto centering math as .cx-page itself, so its left/right
+   edges always land exactly on .cx-page's own edges on every route at every width -- the rails
+   then sit inside that frame's own edge, i.e. inside the page's real clamp(16px,3vw,48px) gutter,
+   which is what "fit within the page" means. No more width gate, no more z-index guessing: the
+   frame is a normal (non-fixed-to-nothing) sibling positioned once, so it never needed a rescue
+   z-index in the first place -- z-index:1 here is just enough to sit above .cx-bg, nothing more. */
+.cx-side-wave-frame { position: fixed; top: 0; left: 0; right: 0; height: 100vh;
+  max-width: 1720px; margin: 0 auto; z-index: 1; pointer-events: none; }
+.cx-side-wave-rail { position: absolute; top: 0; width: clamp(16px, 3vw, 48px); height: 100%;
+  overflow: hidden; }
 .cx-side-wave-rail-left { left: 0; }
 .cx-side-wave-rail-right { right: 0; }
-.cx-side-wave-layer { position: absolute; left: 50%; width: 100vh; height: 240px; }
+/* Base layer sized to the gutter itself (was 240px, matching the old 240px rail -- now the rail
+   is only clamp(16px,3vw,48px) wide, so the pre-rotation SVG "height" -- which becomes the rail's
+   on-screen width after the 90deg rotate -- has to shrink to match). overflow:hidden on the rail
+   clips the small excess from the 1.0-1.15 scale layers rather than needing pixel-exact math. */
+.cx-side-wave-layer { position: absolute; left: 50%; width: 100vh; height: 44px; }
 
 /* ---------- Footer ---------- */
 /* height/background explicitly reset here -- styles.css has an UNSCOPED bare `footer { height:4px;
@@ -543,7 +559,20 @@
    itself (CoherenceContactIcons.jsx) also renders in the header now, where there's no .cx-foot
    wrapper to hang the flex/gap/centering off of, so those live on the row's own wrapper class
    instead and work identically in both places. */
-.cx-contact-icons { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+/* Reworked 2026-08-28, tenth pass -- Tyler: "expand the spacing on the social links to match the
+   width of the portfolio panel. I also don't want them to change sizes when clicked on. This can
+   be achieved by spreading them out." max-width matches the cards column's own rendered width
+   (~528px: the 1fr share of .cx-home-grid's 2fr/1fr split at full page width) and
+   justify-content:space-between spreads the 5 items across it edge to edge -- the actual "spread
+   out" fix. The three items whose label changes on click get a fixed min-width sized to their
+   LONGEST possible text (below) so the click only swaps the label inside an already-fixed slot;
+   nothing has to grow, so nothing shifts. Footer-only -- the compact header duplicate stays as
+   its own tighter inline row (:not(.cx-contact-icons-compact) below). */
+.cx-contact-icons { display: flex; gap: 0; flex-wrap: nowrap; justify-content: space-between;
+  max-width: 528px; margin: 0 auto; }
+.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-email { min-width: 152px; }
+.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-phone { min-width: 114px; }
+.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-discord { min-width: 90px; }
 /* Compact variant, header only (2026-08-28, ninth pass -- Tyler: "Take the footer icons and have
    them in the top of the page as well in the header"). Smaller icons, tighter gap, no wrap, docked
    to the row's far right via margin-left:auto so it doesn't crowd the wordmark/toggle on the left. */
@@ -565,4 +594,5 @@
 
 @media (max-width: 700px) {
   .cx-page { padding-top: 60px; }
+  .cx-contact-icons { flex-wrap: wrap; justify-content: center; gap: 20px 16px; max-width: none; }
 }

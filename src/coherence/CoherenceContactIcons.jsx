@@ -19,15 +19,15 @@ export default function CoherenceContactIcons({ compact = false }) {
         <img src="images/GithubLogoGold.png" alt="" />
         <span>GitHub</span>
       </a>
-      <button type="button" className={itemClass} onClick={() => setEmailText(t => t === 'Email' ? 'tylerfruik@gmail.com' : 'Email')}>
+      <button type="button" className={`${itemClass} cx-foot-item-email`} onClick={() => setEmailText(t => t === 'Email' ? 'tylerfruik@gmail.com' : 'Email')}>
         <img src="images/GmailLogoGold.png" alt="" />
         <span>{emailText}</span>
       </button>
-      <button type="button" className={itemClass} onClick={() => setPhoneText(t => t === 'Phone' ? '(715) 439-0345' : 'Phone')}>
+      <button type="button" className={`${itemClass} cx-foot-item-phone`} onClick={() => setPhoneText(t => t === 'Phone' ? '(715) 439-0345' : 'Phone')}>
         <img src="images/PhoneLogoGold.png" alt="" />
         <span>{phoneText}</span>
       </button>
-      <button type="button" className={itemClass} onClick={() => setDiscordText(t => t === 'Discord' ? 'GBCxPrime' : 'Discord')}>
+      <button type="button" className={`${itemClass} cx-foot-item-discord`} onClick={() => setDiscordText(t => t === 'Discord' ? 'GBCxPrime' : 'Discord')}>
         <img src="images/DiscordLogoGold.png" alt="" />
         <span>{discordText}</span>
       </button>

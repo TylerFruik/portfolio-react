@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ABOUT_PARAGRAPHS, DEV_QA, SKILLS, CREATIVE_HOBBIES } from '../content/profileContent';
 import { PROJECTS } from '../content/projects';
 import CoherenceSkillChip from './CoherenceSkillCard';
@@ -35,6 +35,25 @@ export default function CoherenceHome() {
     return () => document.removeEventListener('click', closeOnOutsideClick);
   }, []);
 
+  // Tenth pass, 2026-08-28 -- Tyler: "Remove the 'Featured' bullet point so that the height of the
+  // Coherence panel is the same as the PFP section." The label's gone (below), and rather than
+  // hardcode a guessed height for the Coherence card, this measures the hero card's own real
+  // rendered height live (ResizeObserver, so it stays matched across font-load reflow, window
+  // resize, etc.) and feeds that number straight into the card's height style.
+  const heroRef = useRef(null);
+  const [heroHeight, setHeroHeight] = useState(null);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    // el.offsetHeight (border-box: padding + border included), not entry.contentRect.height
+    // (content-box only, i.e. minus the hero card's own 22px padding + 3px border on every
+    // side) -- the Coherence card is also box-sizing:border-box, so it needs the same border-box
+    // number to actually come out the same rendered height, not 50px short.
+    const ro = new ResizeObserver(() => setHeroHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   function renderCard(p, extraProps = {}) {
     return (
       <CoherenceCard
@@ -57,7 +76,7 @@ export default function CoherenceHome() {
     <div className="cx-page">
       <div className="cx-home-grid">
         <div className="cx-home-left">
-          <div className="cx-hero-card">
+          <div className="cx-hero-card" ref={heroRef}>
             <img className="cx-hero-pfp" src="images/pfp.png" alt="Tyler Fruik" />
             <div className="cx-hero-skills">
               <div className="cx-skill-row">
@@ -69,14 +88,14 @@ export default function CoherenceHome() {
           </div>
 
           <div className="cx-section" style={{ marginTop: 28 }}>
-            <div className="cx-section-title"><span className="cx-dot" style={{ '--c': 'var(--cx-accent2)' }} />About</div>
+            <div className="cx-section-title cx-section-title-lg"><span className="cx-dot" style={{ '--c': 'var(--cx-accent2)' }} />About</div>
             <div className="cx-prose">
               {ABOUT_PARAGRAPHS.map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </div>
 
           <div className="cx-section">
-            <div className="cx-section-title"><span className="cx-dot" style={{ '--c': 'var(--cx-accent2)' }} />Get to Know a Dev</div>
+            <div className="cx-section-title cx-section-title-lg"><span className="cx-dot" style={{ '--c': 'var(--cx-accent2)' }} />Get to Know a Dev</div>
             <div className="cx-prose">
               {DEV_QA.map((item, i) => (
                 <div className="cx-qa-item" key={i} style={{ '--c': `var(--cx-${QA_ACCENT_CYCLE[i % 2]})` }}>
@@ -91,10 +110,7 @@ export default function CoherenceHome() {
           </div>
 
           <div className="cx-section">
-            <div className="cx-section-title"><span className="cx-dot" />Creative Hobbies</div>
-            <p style={{ color: 'var(--cx-dim)', fontSize: 13, margin: '0 0 14px' }}>
-              Pulled straight from the rest of Coherence, my own life-structure system: the parts of my life that aren't code.
-            </p>
+            <div className="cx-section-title cx-section-title-lg"><span className="cx-dot" />Creative Hobbies</div>
             <ul className="cx-hobby-list">
               {CREATIVE_HOBBIES.map((h, i) => <li key={i}>{h}</li>)}
             </ul>
@@ -103,7 +119,6 @@ export default function CoherenceHome() {
 
         <div className="cx-home-cards">
           <div className="cx-section" style={{ marginTop: 16 }}>
-            <div className="cx-section-title"><span className="cx-dot" />Featured</div>
             <div className="cx-pf-cards">
               <CoherenceCard
                 hue="identity"
@@ -112,7 +127,7 @@ export default function CoherenceHome() {
                 placeholder="Placeholder, swap for a real screenshot"
                 tag="Systems Design"
                 subtitle="A personal life-structure system I designed and built myself: four color-coded life areas, a card-based UI, and an AI-assisted capture-to-action pipeline. This whole v2 design is built from its actual CSS/JS."
-                style={{ gridColumn: '1 / -1', aspectRatio: 'auto', height: 260 }}
+                style={{ gridColumn: '1 / -1', aspectRatio: 'auto', height: heroHeight || 260 }}
               />
             </div>
           </div>
