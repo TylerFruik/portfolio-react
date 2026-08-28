@@ -5,6 +5,7 @@ import Foot from './components/Foot';
 import { useCoherenceTheme } from './coherence/CoherenceThemeContext';
 import CoherenceNav from './coherence/CoherenceNav';
 import CoherenceFoot from './coherence/CoherenceFoot';
+import CoherenceSideWaves from './coherence/CoherenceSideWaves';
 
 // Eighth pass, 2026-08-28 -- the v1/v2 view switch no longer lives here as its own fixed corner
 // element. Tyler: "I want the v1/v2 toggle button to be up in the corner next to Tyler Fruik in
@@ -20,6 +21,7 @@ function App() {
       <div className="cx-top-actions">
         <Link to="/resume" className="cx-resume-btn">Resume</Link>
       </div>
+      {v2 && <CoherenceSideWaves />}
       {v2 ? <CoherenceNav /> : <Nav />}
       <Outlet />
       {v2 ? <CoherenceFoot /> : <Foot />}

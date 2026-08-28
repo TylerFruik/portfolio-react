@@ -243,11 +243,17 @@
    where .coherence-v2's custom properties don't exist. */
 .cx-top-actions { position: fixed; top: 14px; right: 14px; z-index: 9999;
   display: flex; align-items: center; gap: 10px; }
-/* v1/v2 view switch (2026-08-28, eighth pass) -- moved out of its own fixed corner and in next to
-   the wordmark itself, per Tyler: "I want the v1/v2 toggle button to be up in the corner next to
-   Tyler Fruik in the breadcrumb. I just didn't want it messing with anything" -- so this is plain
-   in-flow now (see CoherenceNav.jsx / components/Nav.jsx for where it's rendered), just margined
-   off the wordmark rather than absolutely/fixed positioned. */
+/* v1/v2 view switch -- ninth pass, 2026-08-28: moved to the LEFT of the wordmark, Tyler: "Put the
+   v1/v2 button on the LEFT of the title, and do not move the title." Plain in-flow placement
+   (eighth pass, right after the wordmark) would have pushed the wordmark's own box rightward the
+   moment it moved before it in the row -- exactly the "don't move the title" constraint rules
+   out. Positioned absolutely instead, hanging off .cx-wordmark-wrap's own left edge (right:100%),
+   so the wordmark's box never has to make room for it: the title stays anchored to the row's own
+   left padding exactly as before, and the switch just renders in the space to its left. See the
+   .cx-view-switch-left wrapper in CoherenceNav.jsx / components/Nav.jsx. */
+.cx-title-cluster { position: relative; display: inline-flex; align-items: center; }
+.cx-view-switch-left { position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
+  margin-right: 14px; }
 .cx-view-switch { display: flex; gap: 2px; padding: 3px; border-radius: 999px;
   background: #181b22; border: 1px solid #2a2f3a; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
 .cx-view-btn { padding: 6px 15px; border-radius: 999px; border: none; background: transparent;
@@ -408,7 +414,12 @@
 .cx-hero-skills { flex: 1; min-width: 260px; }
 
 /* ---------- About prose ---------- */
-.cx-prose p { max-width: 74ch; line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); }
+/* max-width:74ch removed 2026-08-28, ninth pass (Tyler: "Let the text take up the whole space.
+   There's a big gap in the middle now") -- the left column widened to 2fr of the page grid the
+   pass before this one, but the 74ch line-length cap didn't grow with it, so the actual text sat
+   noticeably narrower than its own column, leaving open space between it and the cards column
+   that had nothing to do with the grid math itself. */
+.cx-prose p { line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); }
 /* Hue-colored underline on the FIRST bold/strong bit of emphasis Tyler asked for more color
    throughout (2026-08-28: "Use the Coherence Colors more often... to designate divs, sections,
    bullet points, underlines"). Kept to section-scoped accents rather than painting every
@@ -494,6 +505,31 @@
   .cx-pf-cards { grid-template-columns: 1fr; }
 }
 
+/* ---------- Side wave decoration (see CoherenceSideWaves.jsx) ---------- */
+/* Fixed to the true viewport edge, not .cx-page -- only ever visible in the empty gutter outside
+   the page's own 1720px-max-width centered content, never overlapping real content. Each rail is
+   a 240px x 100vh box; the SVG layers inside are rendered at the SWAPPED dimensions (100vh wide x
+   240 tall) and rotated 90deg, so after rotation they fill the rail exactly -- same trick as
+   rotating a landscape photo into a portrait frame. pointer-events:none so it's purely decorative
+   and never intercepts clicks even where it happens to sit under narrower-viewport content. */
+/* Hidden below 2200px (2026-08-28 fix, same day) rather than fought over with z-index -- a
+   negative z-index here landed BELOW the page's own root background for reasons not worth
+   chasing further (some ancestor stacking context, likely from the dev tooling shell), while any
+   zero-or-higher z-index paints above plain static content and would visibly sit over the hero
+   card/text/cards on any viewport where the two actually overlap. A width gate sidesteps the
+   whole stacking question: 1720px page max-width + 2 * 240px rail width = 2200px is the exact
+   viewport width where the rails first fit entirely within the real empty gutter with zero
+   overlap possible, so it's simply not rendered at all below that, and needs no special z-index
+   above it since nothing else occupies that space at that width anyway. */
+.cx-side-wave-rail { display: none; position: fixed; top: 0; width: 240px; height: 100vh;
+  overflow: hidden; pointer-events: none; }
+@media (min-width: 2200px) {
+  .cx-side-wave-rail { display: block; }
+}
+.cx-side-wave-rail-left { left: 0; }
+.cx-side-wave-rail-right { right: 0; }
+.cx-side-wave-layer { position: absolute; left: 50%; width: 100vh; height: 240px; }
+
 /* ---------- Footer ---------- */
 /* height/background explicitly reset here -- styles.css has an UNSCOPED bare `footer { height:4px;
    background:var(--tertiary) }` rule (a v1 decorative divider) that otherwise bleeds onto this
@@ -501,9 +537,20 @@
    2026-08-28 as Tyler's "footer is broken" report -- a solid gold bar sitting over the footer
    links. Every bare HTML tag this v2 theme reuses (footer/header/a/body) needs to be checked
    against styles.css's own global rules the same way; this is the one that actually collided. */
-.cx-foot { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center;
-  height: auto; background: none;
+.cx-foot { height: auto; background: none;
   padding: 32px 0 8px; border-top: 1px solid var(--cx-line); margin-top: 48px; }
+/* Row-layout properties live here now, not on .cx-foot (2026-08-28, ninth pass) -- the icon row
+   itself (CoherenceContactIcons.jsx) also renders in the header now, where there's no .cx-foot
+   wrapper to hang the flex/gap/centering off of, so those live on the row's own wrapper class
+   instead and work identically in both places. */
+.cx-contact-icons { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; }
+/* Compact variant, header only (2026-08-28, ninth pass -- Tyler: "Take the footer icons and have
+   them in the top of the page as well in the header"). Smaller icons, tighter gap, no wrap, docked
+   to the row's far right via margin-left:auto so it doesn't crowd the wordmark/toggle on the left. */
+.cx-contact-icons-compact { gap: 16px; flex-wrap: nowrap; justify-content: flex-start;
+  margin-left: auto; }
+.cx-foot-item-compact { font-size: 11px; }
+.cx-foot-item-compact img { width: 20px; height: 20px; }
 /* Icons restored 2026-08-28 (Tyler: "Bring back the exact ones from the Portfolio v1") -- same
    five pre-made gold PNGs (public/images/*Gold.png) v1's Foot.jsx uses, just laid out as a
    column-per-item to match this footer's plainer row instead of v1's own bootstrap-flavored nav. */
