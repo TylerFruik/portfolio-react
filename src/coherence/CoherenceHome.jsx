@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ABOUT_PARAGRAPHS, DEV_QA, SKILLS, CREATIVE_HOBBIES } from '../content/profileContent';
 import { PROJECTS } from '../content/projects';
 import CoherenceSkillChip from './CoherenceSkillCard';
@@ -13,10 +13,45 @@ const QA_ACCENT_CYCLE = ['accent', 'accent2'];
 // (Featured + Projects + Bootcamp Coursework, two wide) now runs alongside it in a right column,
 // instead of living on its own separate route. Both nav links ("About Me" and "Portfolio") point
 // here now -- see pages/Portfolio/Portfolio.jsx, which renders this same component for v2.
+//
+// Sixth pass, same day -- the old global "Show GitHub repos" toggle is gone. Tyler: "I want to
+// change the 'Show GitHub Repos' button to instead be an option that displays on the cards,
+// revealed after the card is clicked. As soon as the user clicks on something else, this goes
+// away." expandedId tracks which single card (if any) is showing its link buttons; a
+// document-level click listener closes it whenever the click didn't originate on a card (cards
+// call stopPropagation on their own click, so this listener only ever fires for genuine "clicked
+// something else" cases -- clicking a different card just moves expandedId there directly, same
+// as clicking the open card again closes it).
 export default function CoherenceHome() {
-  const [showRepo, setShowRepo] = useState(false);
+  const [expandedId, setExpandedId] = useState(null);
   const main = PROJECTS.filter(p => p.tier !== 'coursework');
   const coursework = PROJECTS.filter(p => p.tier === 'coursework');
+
+  useEffect(() => {
+    function closeOnOutsideClick() {
+      setExpandedId(null);
+    }
+    document.addEventListener('click', closeOnOutsideClick);
+    return () => document.removeEventListener('click', closeOnOutsideClick);
+  }, []);
+
+  function renderCard(p, extraProps = {}) {
+    return (
+      <CoherenceCard
+        key={p.id}
+        hue={p.hue}
+        title={p.title}
+        tag={p.tag}
+        image={p.image ? `images/${p.id}.png` : null}
+        placeholder={p.image ? null : 'No screenshot yet'}
+        deployed={p.deployed}
+        repo={p.repo}
+        expanded={expandedId === p.id}
+        onToggle={() => setExpandedId(id => (id === p.id ? null : p.id))}
+        {...extraProps}
+      />
+    );
+  }
 
   return (
     <div className="cx-page">
@@ -68,13 +103,6 @@ export default function CoherenceHome() {
         </div>
 
         <div className="cx-home-cards">
-          <div className="cx-home-cards-head">
-            <button type="button" className="cx-toggle" style={{ position: 'static' }} onClick={() => setShowRepo(v => !v)}>
-              <span className="cx-toggle-dot" />
-              {showRepo ? 'Show deployed sites' : 'Show GitHub repos'}
-            </button>
-          </div>
-
           <div className="cx-section" style={{ marginTop: 16 }}>
             <div className="cx-section-title"><span className="cx-dot" />Featured</div>
             <div className="cx-pf-cards">
@@ -93,42 +121,14 @@ export default function CoherenceHome() {
           <div className="cx-section">
             <div className="cx-section-title"><span className="cx-dot" />Projects</div>
             <div className="cx-pf-cards">
-              {main.map(p => {
-                const href = showRepo ? (p.repo || p.deployed) : (p.deployed || p.repo);
-                if (!href) return null;
-                return (
-                  <CoherenceCard
-                    key={p.id}
-                    hue={p.hue}
-                    title={p.title}
-                    href={href}
-                    tag={p.tag}
-                    image={p.image ? `images/${p.id}.png` : null}
-                    placeholder={p.image ? null : 'No screenshot yet'}
-                  />
-                );
-              })}
+              {main.map(p => renderCard(p))}
             </div>
           </div>
 
           <div className="cx-section">
             <div className="cx-section-title"><span className="cx-dot" />Bootcamp Coursework</div>
             <div className="cx-pf-cards">
-              {coursework.map(p => {
-                const href = showRepo ? (p.repo || p.deployed) : (p.deployed || p.repo);
-                if (!href) return null;
-                return (
-                  <CoherenceCard
-                    key={p.id}
-                    hue={p.hue}
-                    title={p.title}
-                    href={href}
-                    tag={p.tag}
-                    image={p.image ? `images/${p.id}.png` : null}
-                    placeholder={p.image ? null : 'No screenshot yet'}
-                  />
-                );
-              })}
+              {coursework.map(p => renderCard(p))}
             </div>
           </div>
         </div>

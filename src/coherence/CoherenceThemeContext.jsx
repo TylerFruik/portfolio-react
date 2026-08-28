@@ -3,15 +3,15 @@ import React, { createContext, useContext, useState } from 'react';
 // v2 toggle (2026-08-28): global on/off for the whole-site Coherence-themed redesign. Lives above
 // <App/> (see main.jsx) so it survives client-side route changes -- flipping the toggle on the
 // Portfolio page and then clicking to About Me keeps v2 on, since this is one React context, not
-// per-page state. Always starts false on a real page load/refresh (Tyler's call: a cold visitor
-// sees the safe v1 design first; v2 is there to impress once they're already looking around).
-const CoherenceThemeContext = createContext({ v2: false, toggle: () => {} });
+// per-page state. Defaults to v2 on page load as of the same day, sixth pass (Tyler: "v2 being
+// the default upon page load") -- reversing the original "safe v1 first" call now that v2 is the
+// finished, primary design.
+const CoherenceThemeContext = createContext({ v2: true, setV2: () => {} });
 
 export function CoherenceThemeProvider({ children }) {
-  const [v2, setV2] = useState(false);
-  const toggle = () => setV2(prev => !prev);
+  const [v2, setV2] = useState(true);
   return (
-    <CoherenceThemeContext.Provider value={{ v2, toggle }}>
+    <CoherenceThemeContext.Provider value={{ v2, setV2 }}>
       {children}
     </CoherenceThemeContext.Provider>
   );

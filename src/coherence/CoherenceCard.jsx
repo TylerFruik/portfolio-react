@@ -7,7 +7,16 @@ import React from 'react';
 // optional single tag chip across the bottom highlighting that project's standout skill.
 // rainbow: opt-in Static Rainbow Border + 16-beam starburst, ported from Maxing's THC Token Night
 // card (identity/maxing/index.html) -- reserved for one signature card, not every tile.
-export default function CoherenceCard({ hue = 'action', title, subtitle, image, placeholder, href, rainbow, tag, children, style }) {
+//
+// Click-to-reveal links (2026-08-28, sixth pass) -- replaces the old whole-card-is-a-link
+// behavior and the global "Show GitHub repos" toggle. Tyler: "I want to change the 'Show GitHub
+// Repos' button to instead be an option that displays on the cards, revealed after the card is
+// clicked. As soon as the user clicks on something else, this goes away." So the card itself is
+// no longer an <a> -- clicking it (when it has at least one link) reveals an overlay with one
+// button per available link (deployed -> "Visit Site", repo -> "GitHub"); expanded/onToggle are
+// controlled by the parent so only one card can be open at a time, and the parent's own
+// document-level click listener closes it when anything else is clicked.
+export default function CoherenceCard({ hue = 'action', title, subtitle, image, placeholder, rainbow, tag, children, style, deployed, repo, expanded, onToggle }) {
   function handleMove(e) {
     if (e.pointerType && e.pointerType !== 'mouse') return;
     const card = e.currentTarget;
@@ -24,16 +33,24 @@ export default function CoherenceCard({ hue = 'action', title, subtitle, image, 
     card.style.setProperty('--ry', '0deg');
   }
 
-  const Tag = href ? 'a' : 'div';
-  const linkProps = href ? { href, target: '_blank', rel: 'noreferrer' } : {};
+  const hasLinks = Boolean(deployed || repo);
+
+  function handleClick(e) {
+    if (!hasLinks || !onToggle) return;
+    e.stopPropagation();
+    onToggle();
+  }
 
   return (
-    <Tag
-      className={`cx-hue-card${rainbow ? ' cx-rainbow' : ''}`}
+    <div
+      className={`cx-hue-card${rainbow ? ' cx-rainbow' : ''}${hasLinks ? ' cx-clickable' : ''}`}
       style={{ '--c': `var(--cx-${hue})`, ...style }}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      {...linkProps}
+      onClick={handleClick}
+      role={hasLinks ? 'button' : undefined}
+      tabIndex={hasLinks ? 0 : undefined}
+      aria-expanded={hasLinks ? expanded : undefined}
     >
       {rainbow && (
         <div className="cx-thc-bg">
@@ -66,7 +83,17 @@ export default function CoherenceCard({ hue = 'action', title, subtitle, image, 
           {tag}
         </div>
       )}
-    </Tag>
+      {expanded && hasLinks && (
+        <div className="cx-hc-links" onClick={(e) => e.stopPropagation()}>
+          {deployed && (
+            <a className="cx-hc-link-btn" href={deployed} target="_blank" rel="noreferrer">Visit Site</a>
+          )}
+          {repo && (
+            <a className="cx-hc-link-btn cx-hc-link-btn-alt" href={repo} target="_blank" rel="noreferrer">GitHub</a>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

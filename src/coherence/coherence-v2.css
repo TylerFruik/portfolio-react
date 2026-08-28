@@ -51,11 +51,12 @@
    visually collides with the wordmark/nav row above it. */
 .cx-topbar { position: sticky; top: 0; z-index: 100; background: var(--cx-bg);
   border-bottom: 1px solid var(--cx-line); }
-/* Right padding widened to clear the fixed top-right button cluster (Resume + theme toggle can run
-   ~210px wide together) -- without this, a narrower viewport lets that cluster sit directly over
-   the nav links since both the topbar and the buttons anchor to the same top-right corner. */
+/* Right padding widened to clear the fixed top-right Resume button -- without this, a narrower
+   viewport lets it sit directly over the nav links since both the topbar and the button anchor to
+   the same top-right corner. (Narrowed from 220px to 140px 2026-08-28, sixth pass, once the view
+   switch moved out to its own top-left spot -- Resume is the only thing left in that corner.) */
 .cx-topbar .cx-header-row { padding: 14px clamp(16px, 3vw, 48px);
-  padding-right: max(clamp(16px, 3vw, 48px), 220px); max-width: 1720px; margin: 0 auto; }
+  padding-right: max(clamp(16px, 3vw, 48px), 140px); max-width: 1720px; margin: 0 auto; }
 .cx-nav a { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
   letter-spacing: .04em; text-decoration: none; color: var(--cx-dim); border: 1px solid transparent;
   transition: color .15s, border-color .15s, background .15s; }
@@ -183,6 +184,20 @@
    where .coherence-v2's custom properties don't exist. */
 .cx-top-actions { position: fixed; top: 14px; right: 14px; z-index: 9999;
   display: flex; align-items: center; gap: 10px; }
+/* Moved to its own top-left spot 2026-08-28, sixth pass (Tyler: "move the view swap button to the
+   top left (do not change the positioning of the breadcrumb)"). top:70px rather than 14px is the
+   load-bearing detail here -- the v2 topbar's own sticky row (wordmark + nav) is ~58px tall, so
+   this sits just below that band instead of overlapping the same row the wordmark renders in.
+   Still position:fixed, so it stays reachable at any scroll position exactly like Resume does;
+   it's just offset down far enough to never need to touch the wordmark's own CSS at all. */
+.cx-top-actions-left { position: fixed; top: 70px; left: 14px; z-index: 9999; }
+.cx-view-switch { display: flex; gap: 2px; padding: 3px; border-radius: 999px;
+  background: #181b22; border: 1px solid #2a2f3a; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+.cx-view-btn { padding: 6px 15px; border-radius: 999px; border: none; background: transparent;
+  color: #8a8f9c; font-size: 12px; font-weight: 700; letter-spacing: .05em; cursor: pointer;
+  transition: background .15s, color .15s; }
+.cx-view-btn:hover:not(.cx-view-btn-active) { color: #d6dae3; }
+.cx-view-btn-active { background: #e8b84b; color: #181b22; }
 .cx-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
   background: #181b22; border: 1px solid #2a2f3a; color: #d6dae3; font-size: 12.5px; font-weight: 600;
   letter-spacing: .05em; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.35);
@@ -210,7 +225,7 @@
   gap: 14px; margin-top: 8px; }
 .cx-hue-card { width: 100%; max-width: 260px; aspect-ratio: 4/3; box-sizing: border-box;
   background: var(--cx-card); border: 1px solid var(--cx-line); border-left: 4px solid var(--c);
-  border-radius: 10px; padding: 12px 14px; cursor: pointer; text-decoration: none; color: inherit;
+  border-radius: 10px; padding: 12px 14px; cursor: default; text-decoration: none; color: inherit;
   --rx: 0deg; --ry: 0deg;
   transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform .2s ease-out, box-shadow .08s, border-color .08s;
@@ -241,6 +256,23 @@
   display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700;
   letter-spacing: .04em; text-transform: uppercase; color: var(--c); position: relative; z-index: 1; }
 .cx-hc-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c); flex: none; }
+
+/* Click-to-reveal link buttons (2026-08-28, sixth pass) -- replaces the old global "Show GitHub
+   repos" toggle. Tyler: "an option that displays on the cards, revealed after the card is
+   clicked... these buttons populate with the relevant options for that project." A card with at
+   least one link gets .cx-clickable (real pointer cursor + a hover lift, so it reads as
+   interactive even before it's been clicked); clicking it shows this overlay in place of its
+   image/placeholder rather than navigating immediately. */
+.cx-hue-card.cx-clickable { cursor: pointer; }
+.cx-hue-card.cx-clickable:hover { border-color: var(--c); }
+.cx-hc-links { position: absolute; inset: 0; z-index: 4; border-radius: inherit;
+  background: rgba(18, 13, 15, .92); display: flex; align-items: center; justify-content: center;
+  gap: 10px; flex-wrap: wrap; padding: 12px; }
+.cx-hc-link-btn { padding: 8px 18px; border-radius: 999px; background: var(--c); color: #17110f;
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,.4); transition: transform .12s; }
+.cx-hc-link-btn:hover { transform: translateY(-2px); }
+.cx-hc-link-btn-alt { background: transparent; border: 1.5px solid var(--c); color: var(--c); }
 
 /* Static Rainbow Border + 16-beam starburst -- ported verbatim from Maxing's THC Token Night card. */
 .cx-rainbow { border-width: 2px; border-color: transparent;
