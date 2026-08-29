@@ -67,7 +67,14 @@
 
 /* ---------- Wordmark (TYLER FRUIK, ported from logo-anim.js / COHERENCE) ---------- */
 .cx-wordmark-wrap { position: relative; display: inline-flex; align-items: center; }
-.cx-wordmark { display: inline-flex; font-size: 24px; font-weight: 600; letter-spacing: .12em;
+/* Fourteenth pass -- Tyler: "Make the TYLER FRUIK in the breadcrumb larger but keep the header
+   the same size." The header row's own height was never actually set by the wordmark -- it's
+   driven by .cx-icons-cluster (61.375px tall live, since the compact contact icons stack an
+   image + label under each other), which is taller than the wordmark's old 37.2px line-height
+   at 24px font-size. So there was real headroom already: 36px keeps the wordmark's line-height
+   (~55.8px) safely under that 61.375px ceiling, meaning it reads noticeably bigger without
+   growing the row -- the icons column stays the tallest thing in the row either way. */
+.cx-wordmark { display: inline-flex; font-size: 36px; font-weight: 600; letter-spacing: .12em;
   text-transform: uppercase; cursor: pointer; }
 .cx-letter { display: inline-block; color: #f2f4f8; white-space: pre;
   transition: color .3s, text-shadow .3s, opacity .3s; }
@@ -298,8 +305,20 @@
 /* v2's inline Resume/Back pill (eleventh pass, CoherenceNav.jsx) -- .cx-view-switch/.cx-view-btn
    are reused verbatim for guaranteed-identical sizing (see that file's own comment); this just
    strips the anchor tag's default underline/color, which those two classes were never written to
-   account for since they'd only ever wrapped a <button> before. */
-.cx-resume-inline { text-decoration: none; }
+   account for since they'd only ever wrapped a <button> before.
+   Fourteenth pass -- Tyler: "Can you make the INNER golden part of the button the same size as
+   the full button's div? It looks like there's a bit of extra size to be filled." .cx-view-switch
+   carries 3px of its own padding around whatever it wraps, which is the right call for the real
+   v1/v2 toggle (two buttons need that dark gutter between/around them to read as a toggle track),
+   but Resume only ever holds ONE button that's always in its active/gold state -- there's nothing
+   for that gutter to separate it from, so it just reads as unfilled space around the pill. Zeroing
+   the outer padding here and moving the same 3px onto the inner button's own padding (6px -> 9px,
+   see .cx-resume-inline .cx-view-btn below) keeps the pill's total footprint exactly as before
+   (3+6 outer+inner = 0+9, same sum) -- so it's still pixel-identical in size to the switch -- while
+   letting the gold now reach every edge of the outer box. */
+.cx-resume-inline { text-decoration: none; padding: 0; }
+.cx-resume-inline .cx-view-btn { width: 100%; box-sizing: border-box; padding: 9px 15px;
+  text-align: center; }
 
 /* ---------- Coherence Card (ported from .hue-card) ---------- */
 /* Landscape notecard reshape (2026-08-28, Tyler: "more like landscape orientation note cards in
@@ -560,17 +579,22 @@
    real, full page length, whatever that is on any given route, automatically. No position, no
    z-index, nothing to fight: a plain grid item can't sit "above" or "below" its siblings, so
    there's no stacking-context mystery left to have. */
-/* Rail width 48 -> 60 -> 20 (thirteenth pass): a flat 3px-stripe pattern doesn't need much room
-   to read correctly, and a narrower rail keeps it trim rather than a wide colored gutter. */
-.cx-side-wave-layout { display: grid; grid-template-columns: 20px 1fr 20px; min-height: 100vh; }
+/* Rail width 48 -> 60 -> 20 -> 12 (fourteenth pass): now that the stripes run across the rail's
+   own width (see below) instead of down its length, 12px is exactly four 3px stripes with no
+   partial fifth stripe getting cut off at the rail's outer edge. */
+.cx-side-wave-layout { display: grid; grid-template-columns: 12px 1fr 12px; min-height: 100vh; }
 /* Thirteenth pass -- Tyler: "The wave thing isn't really working. How about instead simple
-   stripes of each color. Each 3 pixels wide." Plain horizontal bands now, three shades of burnt
-   orange plus one gold, 3px each, repeating down the full rail (which is still a real grid column
-   stretching to the page's true height -- see .cx-side-wave-layout above -- so the stripe pattern
-   just needs to repeat, not be told how tall to be). Rail narrowed 60 -> 20px to match: a thin
-   striped edge reads as trim, not a wide colored gutter. */
+   stripes of each color. Each 3 pixels wide." Plain bands, three shades of burnt orange plus one
+   gold, 3px each.
+   Fourteenth pass -- Tyler: "Those lines were meant to be vertical lines not horizontal." The
+   thirteenth-pass version repeated `to bottom` -- four flat bands stacked down the rail's length,
+   i.e. horizontal stripes. Flipping the gradient direction to `to right` instead lays the same
+   four 3px bands out side by side ACROSS the rail's own width, so each one is a full-height
+   vertical line -- still a real grid column stretching to the page's true height (see
+   .cx-side-wave-layout above), just sliced the other way. Rail narrowed 20 -> 12px to match, so
+   the four lines fill it exactly once with nothing cut off. */
 .cx-side-wave-rail { overflow: hidden; pointer-events: none;
-  background-image: repeating-linear-gradient(to bottom,
+  background-image: repeating-linear-gradient(to right,
     color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 0px, color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 3px,
     var(--cx-accent2) 3px, var(--cx-accent2) 6px,
     var(--cx-accent) 6px, var(--cx-accent) 9px,
@@ -599,11 +623,24 @@
    having the links on the header is enough"), so the header/footer-alignment problem the
    eleventh-pass grid rework existed to solve is moot; back to plain flex now that there's only
    ever one instance. Tyler: "I want it to be the same width as the portfolio panels,
-   space-between justified" -- width matches .cx-home-cards' own rendered width (measured live),
-   and justify-content:space-between spreads the 5 icons across it edge to edge, literally what
-   he asked for. */
+   space-between justified" -- width matches .cx-home-cards' own rendered width, and
+   justify-content:space-between spreads the 5 icons across it edge to edge, literally what he
+   asked for.
+   Fourteenth pass -- Tyler: "They're all clumped up into just the right column of the portfolio
+   cards, but I want it to be across both of them... Gift Pot AND Lil' Chefs." The hardcoded
+   528px this rule used to carry WAS the right number on the day it was measured, but a hardcoded
+   snapshot like that is exactly the kind of thing that quietly drifts the next time anything
+   upstream changes the page's available width (the rail went 60px -> 20px since) -- this row
+   already went stale once. Rebuilt as a real formula instead of another guess: .cx-home-cards is
+   the 1fr column of .cx-home-grid's `2fr 1fr` split with a 40px gap (see .cx-home-grid), so its
+   width is always exactly (total - 40) / 3 of that grid's own content box. .cx-header-row shares
+   the identical max-width:1720px + clamp() padding as .cx-page (see that rule's own comment), so
+   its 100% is the same "total" -- this calc produces .cx-home-cards' real width structurally,
+   automatically staying correct at any viewport instead of needing to be re-measured and
+   re-typed by hand every time something upstream shifts. min-width:0 keeps the calc from
+   fighting flexbox's default min-width:auto at narrow widths. */
 .cx-contact-icons { display: flex; align-items: center; justify-content: space-between;
-  width: min(528px, 100%); }
+  width: 100%; }
 /* Thirteenth pass -- margin-left:auto moved from .cx-contact-icons itself onto this wrapper.
    Tyler: "the socials buttons are not in line with the portfolio [cards column]." Resume used to
    be a normal flex sibling right after the icons, which meant the icons' own right edge stopped
@@ -612,8 +649,18 @@
    hangs off THIS wrapper's right edge via position:absolute (.cx-resume-right, mirroring the
    switch) instead of sitting in normal flow after it, this wrapper -- and the icons inside it --
    can go back to being flush against the row's real right padding, matching .cx-home-cards
-   exactly. */
-.cx-icons-cluster { position: relative; margin-left: auto; }
+   exactly.
+   Fourteenth pass -- the actual width calc (see .cx-contact-icons below for the "why (100-40)/3"
+   math) has to live HERE, one level up, not on .cx-contact-icons itself. .cx-contact-icons'
+   containing block is THIS element, and this element had no declared width of its own (shrink-
+   to-fit, sized off its children's own content) -- so a percentage on the child had nothing
+   definite to resolve against and silently fell back to the icons' intrinsic content width
+   (measured live at ~236px, roughly one card column, exactly Tyler's "clumped into just the
+   right column" complaint). Giving THIS wrapper the calc'd width first makes it a definite-width
+   box (correctly resolving against .cx-header-row's own content box, which lines up with
+   .cx-home-grid's -- see .cx-header-row's comment above), so .cx-contact-icons' width:100%
+   inside it now has something real to fill. */
+.cx-icons-cluster { position: relative; margin-left: auto; width: calc((100% - 40px) / 3); }
 /* Resume/Back, mirrored (thirteenth pass) -- same mechanism as .cx-view-switch-left, just facing
    the other direction: position:absolute, hung off this row's own right-side content cluster via
    left:100% + margin-left:14px (switch uses right:100% + margin-right:14px off the LEFT cluster).
