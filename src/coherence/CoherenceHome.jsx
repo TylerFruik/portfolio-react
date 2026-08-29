@@ -6,6 +6,30 @@ import CoherenceCard from './CoherenceCard';
 
 const QA_ACCENT_CYCLE = ['accent', 'accent2'];
 
+// Thirteenth pass, 2026-08-28 -- Tyler: "I asked for logic in place so that a line doesn't end
+// with an I, for example the first line under the About section." text-wrap:pretty (added a pass
+// earlier) only balances a paragraph's LAST line -- it has no idea "I" specifically shouldn't
+// dangle at the end of some line in the MIDDLE of a justified paragraph, which is where this was
+// actually happening. A real fix has to work at the text level: glue every standalone "I" to
+// whatever word follows it with a non-breaking space, so the line-wrap algorithm physically can't
+// split them onto different lines -- "I" can now only ever wrap together with the word after it,
+// never dangle alone. Built with String.fromCharCode(160) rather than a literal character in the
+// source, so there's no ambiguity between a normal space and a non-breaking one sitting in the
+// file looking identical.
+const NBSP = String.fromCharCode(160);
+function glueOrphans(text) {
+  if (typeof text !== 'string') return text;
+  // Splits on plain spaces and rejoins word-by-word, swapping in a non-breaking space wherever
+  // the PRECEDING token is exactly "I" (its own word, not part of "I've"/"I'm"/etc, since those
+  // split as their own single token to begin with).
+  const words = text.split(' ');
+  let out = words[0] || '';
+  for (let i = 1; i < words.length; i++) {
+    out += (words[i - 1] === 'I' ? NBSP : ' ') + words[i];
+  }
+  return out;
+}
+
 // Fifth pass, 2026-08-28 -- Tyler: "I no longer want About Me and Portfolio to be different
 // pages. I want two columns alongside everything that's currently on About Me." So About Me and
 // Portfolio collapse into this one page: everything that was here before (hero, About, Get to
@@ -90,7 +114,7 @@ export default function CoherenceHome() {
           <div className="cx-section" style={{ marginTop: 28 }}>
             <div className="cx-section-title cx-section-title-lg"><span className="cx-dot" style={{ '--c': 'var(--cx-accent2)' }} />About</div>
             <div className="cx-prose">
-              {ABOUT_PARAGRAPHS.map((p, i) => <p key={i}>{p}</p>)}
+              {ABOUT_PARAGRAPHS.map((p, i) => <p key={i}>{glueOrphans(p)}</p>)}
             </div>
           </div>
 
@@ -101,9 +125,9 @@ export default function CoherenceHome() {
                 <div className="cx-qa-item" key={i} style={{ '--c': `var(--cx-${QA_ACCENT_CYCLE[i % 2]})` }}>
                   <div className="cx-qa-head">
                     <span className="cx-dot" />
-                    {item.q}
+                    {glueOrphans(item.q)}
                   </div>
-                  <p>{item.a}</p>
+                  <p>{glueOrphans(item.a)}</p>
                 </div>
               ))}
             </div>
@@ -112,7 +136,7 @@ export default function CoherenceHome() {
           <div className="cx-section">
             <div className="cx-section-title cx-section-title-lg"><span className="cx-dot" />Creative Hobbies</div>
             <ul className="cx-hobby-list">
-              {CREATIVE_HOBBIES.map((h, i) => <li key={i}>{h}</li>)}
+              {CREATIVE_HOBBIES.map((h, i) => <li key={i}>{glueOrphans(h)}</li>)}
             </ul>
           </div>
         </div>
@@ -134,7 +158,7 @@ export default function CoherenceHome() {
                 title="Coherence"
                 placeholder="Placeholder, swap for a real screenshot"
                 tag="Systems Design"
-                subtitle="A personal life-structure system I designed and built myself: four color-coded life areas, a card-based UI, and an AI-assisted capture-to-action pipeline. This whole v2 design is built from its actual CSS/JS."
+                subtitle={glueOrphans("A personal life-structure system I designed and built myself: four color-coded life areas, a card-based UI, and an AI-assisted capture-to-action pipeline. This whole v2 design is built from its actual CSS/JS.")}
                 style={{ gridColumn: '1 / -1', aspectRatio: 'auto', height: heroHeight || 260 }}
               />
             </div>

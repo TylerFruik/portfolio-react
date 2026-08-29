@@ -264,7 +264,16 @@
 .cx-title-cluster { position: relative; display: inline-flex; align-items: center; }
 .cx-view-switch-left { position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
   margin-right: 14px; }
-.cx-view-switch { display: flex; gap: 2px; padding: 3px; border-radius: 999px;
+/* min-width added (thirteenth pass) -- Tyler: "I want the exact same number of pixels between the
+   edge of the button and the edge of the page as the v1/v2 button." The switch (two buttons,
+   "v1"+"v2") and Resume (one button, "Resume" or "Back") reuse this same class, but naturally
+   render at different widths since they hold different text -- and since both hang off an
+   adjacent element by the same margin (see .cx-resume-right below), a width difference is exactly
+   what would throw the two edge-distances out of sync. Pinning both to the same explicit width
+   removes that variable, so the "same pixel count" is a structural guarantee, not a coincidence
+   that breaks the next time either label changes length. */
+.cx-view-switch { display: flex; gap: 2px; padding: 3px; border-radius: 999px; min-width: 105px;
+  box-sizing: border-box; justify-content: center;
   background: #181b22; border: 1px solid #2a2f3a; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
 .cx-view-btn { padding: 6px 15px; border-radius: 999px; border: none; background: transparent;
   color: #8a8f9c; font-size: 12px; font-weight: 700; letter-spacing: .05em; cursor: pointer;
@@ -551,8 +560,21 @@
    real, full page length, whatever that is on any given route, automatically. No position, no
    z-index, nothing to fight: a plain grid item can't sit "above" or "below" its siblings, so
    there's no stacking-context mystery left to have. */
-.cx-side-wave-layout { display: grid; grid-template-columns: 48px 1fr 48px; min-height: 100vh; }
-.cx-side-wave-rail { overflow: hidden; pointer-events: none; }
+/* Rail width 48 -> 60 -> 20 (thirteenth pass): a flat 3px-stripe pattern doesn't need much room
+   to read correctly, and a narrower rail keeps it trim rather than a wide colored gutter. */
+.cx-side-wave-layout { display: grid; grid-template-columns: 20px 1fr 20px; min-height: 100vh; }
+/* Thirteenth pass -- Tyler: "The wave thing isn't really working. How about instead simple
+   stripes of each color. Each 3 pixels wide." Plain horizontal bands now, three shades of burnt
+   orange plus one gold, 3px each, repeating down the full rail (which is still a real grid column
+   stretching to the page's true height -- see .cx-side-wave-layout above -- so the stripe pattern
+   just needs to repeat, not be told how tall to be). Rail narrowed 60 -> 20px to match: a thin
+   striped edge reads as trim, not a wide colored gutter. */
+.cx-side-wave-rail { overflow: hidden; pointer-events: none;
+  background-image: repeating-linear-gradient(to bottom,
+    color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 0px, color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 3px,
+    var(--cx-accent2) 3px, var(--cx-accent2) 6px,
+    var(--cx-accent) 6px, var(--cx-accent) 9px,
+    color-mix(in srgb, var(--cx-accent2) 55%, white 45%) 9px, color-mix(in srgb, var(--cx-accent2) 55%, white 45%) 12px); }
 .cx-site-col { min-width: 0; }
 
 /* ---------- Footer ---------- */
@@ -573,29 +595,35 @@
    itself (CoherenceContactIcons.jsx) also renders in the header now, where there's no .cx-foot
    wrapper to hang the flex/gap/centering off of, so those live on the row's own wrapper class
    instead and work identically in both places. */
-/* Rebuilt 2026-08-28, eleventh pass -- Tyler: "the footer is all messed up. They're not spaced
-   well at all" + "the socials buttons at the top are very cramped together. I want them to be
-   vertically in line with their correlates at the bottom of the screen." Two bugs in the tenth-
-   pass version caused both complaints at once: the footer lived inside .cx-page-narrow
-   (max-width:860px, CENTERED on the viewport) while the header row lives inside a
-   max-width:1720px frame anchored to the SAME edges as .cx-page below -- two completely different
-   coordinate systems, so a "matching" 528px width in each one still landed at a different x
-   position on screen, and flex justify-content:space-between distributes leftover space based on
-   each item's own rendered width, so the compact header icons (narrower) and full footer icons
-   (wider) never lined up per-icon even when the row width happened to match.
-   Fixed with one rule for both: a real 5-equal-column CSS grid (one column per icon, GitHub/
-   Email/Phone/Discord/LinkedIn always in that order), same fixed width, same right-dock, in both
-   places -- see CoherenceFoot.jsx (dropped .cx-page-narrow so it shares .cx-page's own
-   1720px/clamp frame) and .cx-contact-icons-compact below. Equal grid columns mean each icon's
-   cell boundaries are pixel-identical between the two rows regardless of icon size, so GitHub
-   sits above GitHub, Email above Email, and so on -- and grid columns don't grow with their
-   content, so a click-revealed email address wraps inside its own cell instead of shifting
-   anything else (the old min-width-per-button hack is gone; this makes it unnecessary). */
-.cx-contact-icons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-  width: min(480px, 100%); margin-left: auto; justify-items: center; }
-/* Compact variant, header only (2026-08-28, ninth pass -- Tyler: "Take the footer icons and have
-   them in the top of the page as well in the header"). Same grid/width as the footer's (that's
-   the alignment fix); only the icon/text size shrinks, via .cx-foot-item-compact below. */
+/* Rebuilt 2026-08-28, twelfth pass -- the footer is gone (Tyler: "remove the footer entirely,
+   having the links on the header is enough"), so the header/footer-alignment problem the
+   eleventh-pass grid rework existed to solve is moot; back to plain flex now that there's only
+   ever one instance. Tyler: "I want it to be the same width as the portfolio panels,
+   space-between justified" -- width matches .cx-home-cards' own rendered width (measured live),
+   and justify-content:space-between spreads the 5 icons across it edge to edge, literally what
+   he asked for. */
+.cx-contact-icons { display: flex; align-items: center; justify-content: space-between;
+  width: min(528px, 100%); }
+/* Thirteenth pass -- margin-left:auto moved from .cx-contact-icons itself onto this wrapper.
+   Tyler: "the socials buttons are not in line with the portfolio [cards column]." Resume used to
+   be a normal flex sibling right after the icons, which meant the icons' own right edge stopped
+   short of the row's true right padding (Resume + the row's gap were eating into that space) --
+   so it could never land on the same edge .cx-home-cards' right edge sits on. Now that Resume
+   hangs off THIS wrapper's right edge via position:absolute (.cx-resume-right, mirroring the
+   switch) instead of sitting in normal flow after it, this wrapper -- and the icons inside it --
+   can go back to being flush against the row's real right padding, matching .cx-home-cards
+   exactly. */
+.cx-icons-cluster { position: relative; margin-left: auto; }
+/* Resume/Back, mirrored (thirteenth pass) -- same mechanism as .cx-view-switch-left, just facing
+   the other direction: position:absolute, hung off this row's own right-side content cluster via
+   left:100% + margin-left:14px (switch uses right:100% + margin-right:14px off the LEFT cluster).
+   Combined with both buttons sharing .cx-view-switch's new min-width, the distance from each
+   button's own outer edge to the page edge is now the same formula mirrored, not two different
+   mechanisms landing in the same place by luck. */
+.cx-resume-right { position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+  margin-left: 14px; }
+/* Compact variant, header only -- smaller icon/text so the row reads as chrome, not a duplicate
+   content section. */
 .cx-foot-item-compact { font-size: 10.5px; }
 .cx-foot-item-compact img { width: 20px; height: 20px; }
 /* Icons restored 2026-08-28 (Tyler: "Bring back the exact ones from the Portfolio v1") -- same

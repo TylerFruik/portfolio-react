@@ -4,7 +4,6 @@ import Foot from './components/Foot';
 
 import { useCoherenceTheme } from './coherence/CoherenceThemeContext';
 import CoherenceNav from './coherence/CoherenceNav';
-import CoherenceFoot from './coherence/CoherenceFoot';
 import CoherenceSideWaves from './coherence/CoherenceSideWaves';
 
 // Eighth pass, 2026-08-28 -- the v1/v2 view switch no longer lives here as its own fixed corner
@@ -30,6 +29,10 @@ import CoherenceSideWaves from './coherence/CoherenceSideWaves';
 // run the length of the full page." They're real grid columns now (.cx-side-wave-layout), with
 // the actual site content as the middle column -- see CoherenceSideWaves.jsx for why that makes
 // them stretch to the page's true full height automatically.
+//
+// Twelfth pass, same day -- CoherenceFoot is gone. Tyler: "Let's actually remove the footer
+// entirely. Having the links on the header is enough." (CoherenceFoot.jsx itself is left in place,
+// unrendered, same as CoherencePortfolio.jsx before it -- not deleted without asking first.)
 function App() {
   const { v2 } = useCoherenceTheme();
   const { pathname } = useLocation();
@@ -50,7 +53,6 @@ function App() {
           <div className="cx-site-col">
             <CoherenceNav />
             <Outlet />
-            <CoherenceFoot />
           </div>
           <CoherenceSideWaves side="right" />
         </div>
