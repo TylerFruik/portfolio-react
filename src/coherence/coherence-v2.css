@@ -51,12 +51,14 @@
    visually collides with the wordmark/nav row above it. */
 .cx-topbar { position: sticky; top: 0; z-index: 100; background: var(--cx-bg);
   border-bottom: 1px solid var(--cx-line); }
-/* Right padding widened to clear the fixed top-right Resume button -- without this, a narrower
-   viewport lets it sit directly over the nav links since both the topbar and the button anchor to
-   the same top-right corner. (Narrowed from 220px to 140px 2026-08-28, sixth pass, once the view
-   switch moved out to its own top-left spot -- Resume is the only thing left in that corner.) */
+/* Eleventh pass, 2026-08-28 -- the extra right-padding reserve for a fixed top-right Resume button
+   is gone: Resume is an inline flex child of this row now (see CoherenceNav.jsx), not a fixed
+   corner element competing with the row's own edge, so it just needs the same padding as
+   .cx-page's own clamp -- which also means this row's content box lines up exactly with .cx-page's
+   (and CoherenceFoot's, once that's on the same clamp+max-width too), so anything right-docked in
+   either one lands at the same x position. See .cx-contact-icons for why that matters. */
 .cx-topbar .cx-header-row { padding: 14px clamp(16px, 3vw, 48px);
-  padding-right: max(clamp(16px, 3vw, 48px), 140px); max-width: 1720px; margin: 0 auto; }
+  max-width: 1720px; margin: 0 auto; }
 .cx-nav a { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
   letter-spacing: .04em; text-decoration: none; color: var(--cx-dim); border: 1px solid transparent;
   transition: color .15s, border-color .15s, background .15s; }
@@ -284,6 +286,11 @@
   color: #e8b84b; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-decoration: none;
   transition: background .15s, transform .15s; }
 .cx-resume-btn:hover { background: rgba(232,184,75,.14); transform: translateY(-1px); }
+/* v2's inline Resume/Back pill (eleventh pass, CoherenceNav.jsx) -- .cx-view-switch/.cx-view-btn
+   are reused verbatim for guaranteed-identical sizing (see that file's own comment); this just
+   strips the anchor tag's default underline/color, which those two classes were never written to
+   account for since they'd only ever wrapped a <button> before. */
+.cx-resume-inline { text-decoration: none; }
 
 /* ---------- Coherence Card (ported from .hue-card) ---------- */
 /* Landscape notecard reshape (2026-08-28, Tyler: "more like landscape orientation note cards in
@@ -436,7 +443,16 @@
    each paragraph ragged/left-aligned by default (only fully-wrapped lines get stretched to fill
    the width), which is exactly the "unless it's the final row" behavior asked for, with no extra
    CSS needed for that part. */
-.cx-prose p { line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt); text-align: justify; }
+/* text-wrap:pretty added (eleventh pass, 2026-08-28) -- Tyler: "I don't enjoy that two of the
+   lines of text end with 'I' floating on its own. Can we add in some code saying that the last
+   word in a line must be at least 2 characters long?" There's no way to hardcode that in CSS
+   (line breaks move every time the column reflows), but text-wrap:pretty is the browser's own
+   built-in fix for exactly this: it's a slower layout pass that specifically avoids leaving a
+   short orphan word alone on the last line of a paragraph, recalculated live at any width -- a
+   hardcoded nbsp glue on the literal last word of the source text would only work at one specific
+   viewport size and break again the moment the column resizes. */
+.cx-prose p, .cx-qa-item p { line-height: 1.65; margin: 0 0 14px; color: var(--cx-txt);
+  text-align: justify; text-wrap: pretty; }
 /* Hue-colored underline on the FIRST bold/strong bit of emphasis Tyler asked for more color
    throughout (2026-08-28: "Use the Coherence Colors more often... to designate divs, sections,
    bullet points, underlines"). Kept to section-scoped accents rather than painting every
@@ -524,27 +540,20 @@
 }
 
 /* ---------- Side wave decoration (see CoherenceSideWaves.jsx) ---------- */
-/* Reworked 2026-08-28, tenth pass -- Tyler: "I don't see the waves... it seems like it's already
-   on the outside edge, just do a Horizontal Flip so they fit within the page." The ninth-pass
-   version lived in the viewport's dead space outside .cx-page's own 1720px column (only nonzero
-   above 2200px), which is why it never showed up for Tyler. Fixed by giving the frame the exact
-   same max-width:1720px + margin:0 auto centering math as .cx-page itself, so its left/right
-   edges always land exactly on .cx-page's own edges on every route at every width -- the rails
-   then sit inside that frame's own edge, i.e. inside the page's real clamp(16px,3vw,48px) gutter,
-   which is what "fit within the page" means. No more width gate, no more z-index guessing: the
-   frame is a normal (non-fixed-to-nothing) sibling positioned once, so it never needed a rescue
-   z-index in the first place -- z-index:1 here is just enough to sit above .cx-bg, nothing more. */
-.cx-side-wave-frame { position: fixed; top: 0; left: 0; right: 0; height: 100vh;
-  max-width: 1720px; margin: 0 auto; z-index: 1; pointer-events: none; }
-.cx-side-wave-rail { position: absolute; top: 0; width: clamp(16px, 3vw, 48px); height: 100%;
-  overflow: hidden; }
-.cx-side-wave-rail-left { left: 0; }
-.cx-side-wave-rail-right { right: 0; }
-/* Base layer sized to the gutter itself (was 240px, matching the old 240px rail -- now the rail
-   is only clamp(16px,3vw,48px) wide, so the pre-rotation SVG "height" -- which becomes the rail's
-   on-screen width after the 90deg rotate -- has to shrink to match). overflow:hidden on the rail
-   clips the small excess from the 1.0-1.15 scale layers rather than needing pixel-exact math. */
-.cx-side-wave-layer { position: absolute; left: 50%; width: 100vh; height: 44px; }
+/* Eleventh pass, 2026-08-28 -- full rebuild. Tyler: "the wavy banners on the side are not what I
+   wanted... they're supposed to be on the edge of the screen pointing inward. I also don't want
+   them to be absolute positioning as they are now, I want them to run the length of the full
+   page." Real grid columns now, not an overlay: .cx-side-wave-layout (wrapping the whole v2 app
+   in App.jsx) is a 3-column grid -- rail / site content / rail -- so each rail is genuinely part
+   of normal document flow, flush to the TRUE viewport edge (column 1 starts at x=0, column 3 ends
+   at x=100%, no max-width centering pulling them inward this time), and grid's own default
+   align-items:stretch makes both rails exactly as tall as the middle (content) column -- i.e. the
+   real, full page length, whatever that is on any given route, automatically. No position, no
+   z-index, nothing to fight: a plain grid item can't sit "above" or "below" its siblings, so
+   there's no stacking-context mystery left to have. */
+.cx-side-wave-layout { display: grid; grid-template-columns: 48px 1fr 48px; min-height: 100vh; }
+.cx-side-wave-rail { overflow: hidden; pointer-events: none; }
+.cx-site-col { min-width: 0; }
 
 /* ---------- Footer ---------- */
 /* height/background explicitly reset here -- styles.css has an UNSCOPED bare `footer { height:4px;
@@ -553,39 +562,53 @@
    2026-08-28 as Tyler's "footer is broken" report -- a solid gold bar sitting over the footer
    links. Every bare HTML tag this v2 theme reuses (footer/header/a/body) needs to be checked
    against styles.css's own global rules the same way; this is the one that actually collided. */
-.cx-foot { height: auto; background: none;
-  padding: 32px 0 8px; border-top: 1px solid var(--cx-line); margin-top: 48px; }
+/* margin:0 added (eleventh pass) -- styles.css's unscoped v1 `footer { margin: 0 4% 0 4%; ... }`
+   was ALSO leaking onto this real <footer> tag, same bug class as the height/background collision
+   above, just never caught until the footer needed to line up precisely with the header row: 4%
+   side margins were shrinking this footer and shifting it off-center relative to its own parent,
+   which is exactly what broke the icon alignment fix below. */
+.cx-foot { height: auto; background: none; margin: 48px 0 0;
+  padding: 32px 0 8px; border-top: 1px solid var(--cx-line); }
 /* Row-layout properties live here now, not on .cx-foot (2026-08-28, ninth pass) -- the icon row
    itself (CoherenceContactIcons.jsx) also renders in the header now, where there's no .cx-foot
    wrapper to hang the flex/gap/centering off of, so those live on the row's own wrapper class
    instead and work identically in both places. */
-/* Reworked 2026-08-28, tenth pass -- Tyler: "expand the spacing on the social links to match the
-   width of the portfolio panel. I also don't want them to change sizes when clicked on. This can
-   be achieved by spreading them out." max-width matches the cards column's own rendered width
-   (~528px: the 1fr share of .cx-home-grid's 2fr/1fr split at full page width) and
-   justify-content:space-between spreads the 5 items across it edge to edge -- the actual "spread
-   out" fix. The three items whose label changes on click get a fixed min-width sized to their
-   LONGEST possible text (below) so the click only swaps the label inside an already-fixed slot;
-   nothing has to grow, so nothing shifts. Footer-only -- the compact header duplicate stays as
-   its own tighter inline row (:not(.cx-contact-icons-compact) below). */
-.cx-contact-icons { display: flex; gap: 0; flex-wrap: nowrap; justify-content: space-between;
-  max-width: 528px; margin: 0 auto; }
-.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-email { min-width: 152px; }
-.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-phone { min-width: 114px; }
-.cx-contact-icons:not(.cx-contact-icons-compact) .cx-foot-item-discord { min-width: 90px; }
+/* Rebuilt 2026-08-28, eleventh pass -- Tyler: "the footer is all messed up. They're not spaced
+   well at all" + "the socials buttons at the top are very cramped together. I want them to be
+   vertically in line with their correlates at the bottom of the screen." Two bugs in the tenth-
+   pass version caused both complaints at once: the footer lived inside .cx-page-narrow
+   (max-width:860px, CENTERED on the viewport) while the header row lives inside a
+   max-width:1720px frame anchored to the SAME edges as .cx-page below -- two completely different
+   coordinate systems, so a "matching" 528px width in each one still landed at a different x
+   position on screen, and flex justify-content:space-between distributes leftover space based on
+   each item's own rendered width, so the compact header icons (narrower) and full footer icons
+   (wider) never lined up per-icon even when the row width happened to match.
+   Fixed with one rule for both: a real 5-equal-column CSS grid (one column per icon, GitHub/
+   Email/Phone/Discord/LinkedIn always in that order), same fixed width, same right-dock, in both
+   places -- see CoherenceFoot.jsx (dropped .cx-page-narrow so it shares .cx-page's own
+   1720px/clamp frame) and .cx-contact-icons-compact below. Equal grid columns mean each icon's
+   cell boundaries are pixel-identical between the two rows regardless of icon size, so GitHub
+   sits above GitHub, Email above Email, and so on -- and grid columns don't grow with their
+   content, so a click-revealed email address wraps inside its own cell instead of shifting
+   anything else (the old min-width-per-button hack is gone; this makes it unnecessary). */
+.cx-contact-icons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: min(480px, 100%); margin-left: auto; justify-items: center; }
 /* Compact variant, header only (2026-08-28, ninth pass -- Tyler: "Take the footer icons and have
-   them in the top of the page as well in the header"). Smaller icons, tighter gap, no wrap, docked
-   to the row's far right via margin-left:auto so it doesn't crowd the wordmark/toggle on the left. */
-.cx-contact-icons-compact { gap: 16px; flex-wrap: nowrap; justify-content: flex-start;
-  margin-left: auto; }
-.cx-foot-item-compact { font-size: 11px; }
+   them in the top of the page as well in the header"). Same grid/width as the footer's (that's
+   the alignment fix); only the icon/text size shrinks, via .cx-foot-item-compact below. */
+.cx-foot-item-compact { font-size: 10.5px; }
 .cx-foot-item-compact img { width: 20px; height: 20px; }
 /* Icons restored 2026-08-28 (Tyler: "Bring back the exact ones from the Portfolio v1") -- same
    five pre-made gold PNGs (public/images/*Gold.png) v1's Foot.jsx uses, just laid out as a
    column-per-item to match this footer's plainer row instead of v1's own bootstrap-flavored nav. */
-.cx-foot-item { display: flex; flex-direction: column; align-items: center; gap: 8px;
-  background: none; border: none; color: var(--cx-dim); font: inherit;
-  font-size: 12.5px; font-weight: 600; cursor: pointer; text-decoration: none; }
+/* min-width:0 + centered wrapping text (eleventh pass) -- lets a click-revealed email/phone
+   number wrap inside its own fixed grid cell instead of forcing the cell (and everything after
+   it) wider, now that the grid's own equal columns are what keeps items from shifting -- see
+   .cx-contact-icons above. */
+.cx-foot-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0;
+  max-width: 100%; background: none; border: none; color: var(--cx-dim); font: inherit;
+  font-size: 12.5px; font-weight: 600; cursor: pointer; text-decoration: none;
+  text-align: center; overflow-wrap: anywhere; }
 .cx-foot-item img { width: 32px; height: 32px; object-fit: contain; }
 .cx-foot-item:hover { color: var(--cx-accent); }
 

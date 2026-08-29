@@ -118,7 +118,15 @@ export default function CoherenceHome() {
         </div>
 
         <div className="cx-home-cards">
-          <div className="cx-section" style={{ marginTop: 16 }}>
+          {/* marginTop:0 (eleventh pass) -- Tyler: "The Coherence project card and the banner
+              panel do not line up... I meant banner div [not pfp div]." The real cause wasn't the
+              old 16px inline override, it's .cx-section's own base rule (margin:32px 0, used
+              correctly everywhere else to space sections apart) -- this is the FIRST section in
+              the cards column, so that top margin was pushing it 32px below cx-home-left's hero
+              card, which isn't wrapped in a .cx-section and so has no such offset. Zeroing just
+              this one instance's top margin (not the class itself) is what actually lines the two
+              cards' top edges up flush. */}
+          <div className="cx-section" style={{ marginTop: 0 }}>
             <div className="cx-pf-cards">
               <CoherenceCard
                 hue="identity"

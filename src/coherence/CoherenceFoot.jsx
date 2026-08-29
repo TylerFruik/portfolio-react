@@ -6,9 +6,14 @@ import CoherenceContactIcons from './CoherenceContactIcons';
 // same click-to-reveal behavior for email/phone/Discord, just styled to sit in the v2 shell.
 // The icon row itself moved out to CoherenceContactIcons.jsx (ninth pass, same day) once it also
 // needed to render up in the header -- see CoherenceNav.jsx.
+//
+// cx-page-narrow dropped (eleventh pass) -- Tyler: "I want them [header icons] to be vertically
+// in line with their correlates at the bottom of the screen." Only possible if the footer shares
+// the exact same 1720px/clamp-padding frame the header row uses; the narrower 860px reading
+// column centered it in a different coordinate system entirely. See .cx-contact-icons.
 export default function CoherenceFoot() {
   return (
-    <div className="cx-page cx-page-narrow" style={{ paddingTop: 0 }}>
+    <div className="cx-page" style={{ paddingTop: 0 }}>
       <footer className="cx-foot">
         <CoherenceContactIcons />
       </footer>

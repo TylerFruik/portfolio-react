@@ -268,28 +268,18 @@ span {
   width: 100%;
 }
 
+/* Pointer-tilt mechanic REMOVED (2026-08-28, eleventh pass) -- Tyler: "On v1, return the developer
+   portfolio cards to what they looked like back a week ago. I liked that layout a lot." This is
+   back to exactly the .project-tile rules from commit 6a5a0e8 (2026-08-20): plain border-swap +
+   grayscale-to-color hover, no perspective/rotateX/rotateY tilt (that was added afterward, ported
+   from Coherence's own hue-card tilt, and is what's being undone here). */
 .project-tile {
   position: relative;
   display: flex;
   flex: 1 1 22%;
   min-width: 200px;
   border: 5px solid var(--tertiary);
-  transition: border 0.8s ease, transform 0.2s ease-out, box-shadow 0.15s ease;
-  /* Pointer-tilt mechanic (2026-08-28), ported from Coherence's own dashboard (dashboard.css's
-     .hue-card + hue.js's wireCardClickAndTilt()) -- scoped port only, same pattern Coherence
-     itself already reuses in half a dozen spots (.media-tile, .tq-max-tile, .goal-row): take the
-     perspective/rotateX/rotateY hover transform + its pointermove/pointerleave handler, not the
-     card's fixed shape. --rx/--ry are set per-tile by the pointermove listener in Portfolio.jsx. */
-  --rx: 0deg;
-  --ry: 0deg;
-  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry));
-  will-change: transform;
-}
-
-.project-tile:hover,
-.project-tile:focus-visible {
-  transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: border 0.8s ease;
 }
 
 .project-tile.featured {

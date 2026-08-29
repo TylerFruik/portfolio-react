@@ -15,9 +15,21 @@ import CoherenceSideWaves from './coherence/CoherenceSideWaves';
 // of which page/theme is showing.
 //
 // Tenth pass, same day -- Tyler: "There's also currently no way to get back to the main page from
-// the Resume page. Find a way that fits nicely." Reusing this exact same fixed corner slot rather
-// than adding a second element: on /resume it swaps to a "Back" link to "/", everywhere else it's
-// the normal "Resume" link -- same button, same spot, no layout change needed to fit it in.
+// the Resume page. Find a way that fits nicely." This fixed corner slot swaps to a "Back" link to
+// "/" on /resume, everywhere else it's the normal "Resume" link.
+//
+// Eleventh pass, same day -- this fixed corner button is now v1-only. Tyler: "The Resume button
+// does not have the same size, spacing, and placement as the v1/v2 switch." A fixed viewport
+// corner can never truly match an inline element's placement (different offset math entirely), so
+// for v2 the Resume/Back control moved into CoherenceNav's own header row, right beside the
+// wordmark, reusing the switch's exact classes -- see CoherenceNav.jsx. v1 keeps this fixed corner
+// version since v1's own toggle (.cx-v1-toggle-corner) is fixed-positioned the same way already.
+//
+// Also eleventh pass: the side waves are no longer a position:fixed overlay rendered here as a
+// sibling. Tyler: "I don't want them to be absolute positioning as they are now, I want them to
+// run the length of the full page." They're real grid columns now (.cx-side-wave-layout), with
+// the actual site content as the middle column -- see CoherenceSideWaves.jsx for why that makes
+// them stretch to the page's true full height automatically.
 function App() {
   const { v2 } = useCoherenceTheme();
   const { pathname } = useLocation();
@@ -25,15 +37,30 @@ function App() {
 
   return (
     <div className={v2 ? 'coherence-v2' : ''}>
-      <div className="cx-top-actions">
-        {onResume
-          ? <Link to="/" className="cx-resume-btn">Back</Link>
-          : <Link to="/resume" className="cx-resume-btn">Resume</Link>}
-      </div>
-      {v2 && <CoherenceSideWaves />}
-      {v2 ? <CoherenceNav /> : <Nav />}
-      <Outlet />
-      {v2 ? <CoherenceFoot /> : <Foot />}
+      {!v2 && (
+        <div className="cx-top-actions">
+          {onResume
+            ? <Link to="/" className="cx-resume-btn">Back</Link>
+            : <Link to="/resume" className="cx-resume-btn">Resume</Link>}
+        </div>
+      )}
+      {v2 ? (
+        <div className="cx-side-wave-layout">
+          <CoherenceSideWaves side="left" />
+          <div className="cx-site-col">
+            <CoherenceNav />
+            <Outlet />
+            <CoherenceFoot />
+          </div>
+          <CoherenceSideWaves side="right" />
+        </div>
+      ) : (
+        <>
+          <Nav />
+          <Outlet />
+          <Foot />
+        </>
+      )}
     </div>
   )
 }

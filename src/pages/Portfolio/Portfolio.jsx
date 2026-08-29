@@ -7,25 +7,13 @@ import { useCoherenceTheme } from '../../coherence/CoherenceThemeContext';
 import CoherenceHome from '../../coherence/CoherenceHome';
 import { PROJECTS } from '../../content/projects';
 
-// Pointer-tilt handler (2026-08-28) -- same --rx/--ry formula as Coherence's own hue.js
-// (wireCardClickAndTilt()): mouse position inside the tile maps to +/-8deg rotateX/rotateY.
-// Mouse-only (checks pointerType), matching Coherence's own gate -- touch devices just don't
-// fire pointermove ambiently, so there's nothing for this to do there anyway.
-function handleTileTilt(e) {
-  if (e.pointerType && e.pointerType !== 'mouse') return;
-  const card = e.currentTarget;
-  const r = card.getBoundingClientRect();
-  const px = ((e.clientX - r.left) / (r.width || 1)) * 100;
-  const py = ((e.clientY - r.top) / (r.height || 1)) * 100;
-  card.style.setProperty('--ry', ((px - 50) / 50 * 8) + 'deg');
-  card.style.setProperty('--rx', (-(py - 50) / 50 * 8) + 'deg');
-}
-function resetTileTilt(e) {
-  if (e.pointerType && e.pointerType !== 'mouse') return;
-  const card = e.currentTarget;
-  card.style.setProperty('--rx', '0deg');
-  card.style.setProperty('--ry', '0deg');
-}
+// Pointer-tilt mechanic REMOVED (eleventh pass, 2026-08-28) -- Tyler: "On v1, return the developer
+// portfolio cards to what they looked like back a week ago. I liked that layout a lot." That was
+// the data-driven project grid from commit 6a5a0e8 (2026-08-20) with its original border-swap/
+// grayscale hover (still in styles.css, untouched); the --rx/--ry perspective-tilt-on-hover this
+// function used to add (ported from Coherence's own hue.js earlier the same day) is what changed
+// since then, so it's what comes back out. See styles.css's .project-tile:hover for the restored
+// original.
 
 // Portfolio project data now lives in ../../content/projects.js (2026-08-28 extraction) -- shared
 // by this v1 page and coherence/CoherencePortfolio.jsx so both read one list instead of two.
@@ -71,8 +59,7 @@ const Portfolio = () => {
               if (!href) return null;
               const tileClass = 'project-tile' + (p.featured ? ' featured' : '') + (p.image ? '' : ' no-image');
               return (
-                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer"
-                  onPointerMove={handleTileTilt} onPointerLeave={resetTileTilt}>
+                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer">
                   {p.image && <img src={`images/${p.id}.png`} alt={`Screenshot of ${p.title}, a project by Tyler Fruik`} />}
                   <h4>{p.title}</h4>
                 </a>
@@ -83,7 +70,7 @@ const Portfolio = () => {
           {/* Coursework tier (2026-08-28): bootcamp weekly-challenge projects, split off into
               their own secondary section so the main grid above leads with the stronger/more
               substantial builds -- Tyler's call once he had real professional experience to
-              lead with instead. Same tile styling/tilt, just a lower-emphasis heading. */}
+              lead with instead. Same tile styling, just a lower-emphasis heading. */}
           <div className='portfolio-header' style={{ marginTop: '32px' }}>
             <div>
               <h3>Bootcamp Coursework</h3>
@@ -95,8 +82,7 @@ const Portfolio = () => {
               if (!href) return null;
               const tileClass = 'project-tile' + (p.image ? '' : ' no-image');
               return (
-                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer"
-                  onPointerMove={handleTileTilt} onPointerLeave={resetTileTilt}>
+                <a key={p.id} className={tileClass} href={href} target="_blank" rel="noreferrer">
                   {p.image && <img src={`images/${p.id}.png`} alt={`Screenshot of ${p.title}, a project by Tyler Fruik`} />}
                   <h4>{p.title}</h4>
                 </a>
