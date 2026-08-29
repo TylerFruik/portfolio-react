@@ -539,7 +539,7 @@
    justified label column + 2-col card column. CoherencePortfolio.jsx that used this is no longer
    routed anywhere; left in place rather than deleted in case a standalone cards-only page is
    wanted again later. */
-   Built 2026-08-28, real implementation of the wireframe shown and approved first. Tyler's own
+/* Built 2026-08-28, real implementation of the wireframe shown and approved first. Tyler's own
    correction on the ask: "I was asking for the entire contents of the Portfolio page, the cards,
    THOSE to be on the column on the right of the screen. And I meant specifically Right Justified."
    grid-template-areas keeps each section's label pinned to the TOP of that section's own card row
