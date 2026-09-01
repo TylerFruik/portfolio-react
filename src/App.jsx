@@ -5,6 +5,7 @@ import Foot from './components/Foot';
 import { useCoherenceTheme } from './coherence/CoherenceThemeContext';
 import CoherenceNav from './coherence/CoherenceNav';
 import CoherenceSideWaves from './coherence/CoherenceSideWaves';
+import CoherenceFoot from './coherence/CoherenceFoot';
 
 // Eighth pass, 2026-08-28 -- the v1/v2 view switch no longer lives here as its own fixed corner
 // element. Tyler: "I want the v1/v2 toggle button to be up in the corner next to Tyler Fruik in
@@ -33,6 +34,13 @@ import CoherenceSideWaves from './coherence/CoherenceSideWaves';
 // Twelfth pass, same day -- CoherenceFoot is gone. Tyler: "Let's actually remove the footer
 // entirely. Having the links on the header is enough." (CoherenceFoot.jsx itself is left in place,
 // unrendered, same as CoherencePortfolio.jsx before it -- not deleted without asking first.)
+//
+// CoherenceFoot revived, mobile-only (2026-08-31, Tyler mobile-friendly pass round 2: "All of the
+// socials buttons can go to the bottom of the page on mobile"). The header's contact icons (see
+// CoherenceNav.jsx) are hidden below the same 700px breakpoint the rest of this mobile work uses
+// (coherence-v2.css), and this renders in their place -- .cx-mobile-foot is display:none above
+// that breakpoint so desktop is completely unaffected, same "render both, let CSS pick" pattern
+// CoherenceContactIcons' own `compact` prop already uses between header/footer.
 function App() {
   const { v2 } = useCoherenceTheme();
   const { pathname } = useLocation();
@@ -53,6 +61,7 @@ function App() {
           <div className="cx-site-col">
             <CoherenceNav />
             <Outlet />
+            <div className="cx-mobile-foot"><CoherenceFoot /></div>
           </div>
           <CoherenceSideWaves side="right" />
         </div>

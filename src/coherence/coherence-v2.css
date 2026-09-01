@@ -30,6 +30,20 @@
   font: 15px/1.55 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
 }
+/* overflow-x:hidden backstop REMOVED here and from .cx-side-wave-layout below (2026-08-31, same
+   session -- Tyler: "The header disappears when I scroll. I do not want this."). Setting
+   overflow-x alone on an ancestor makes the UA compute its overflow-y as auto too (CSS Overflow
+   spec: an explicit non-visible value on one axis forces 'visible' on the other axis to become
+   'auto', never leaves a lone axis scrollable) -- turning .coherence-v2 and .cx-side-wave-layout
+   into scroll containers is exactly what breaks position:sticky for anything inside them, since a
+   sticky element sticks to its nearest scrolling ancestor, not necessarily the real viewport. The
+   header (.cx-topbar) went from "pinned" to "scrolls away like static" the moment this landed,
+   which is what round 3's own new position:sticky above was fighting without knowing it. Safe to
+   remove now: the actual overflow sources from the original report (the switch/Resume pills hung
+   off-canvas, the icon column, the thick rail stripes, the hero-skills wrap bug) were all fixed
+   directly elsewhere in this file already -- this was a blunt backstop for a problem that no
+   longer has a known cause, and it was actively breaking something Tyler explicitly wants. If a
+   genuine horizontal overflow turns up again, fix that specific element instead of re-adding this. */
 
 .coherence-v2 a { color: inherit; }
 
@@ -583,6 +597,8 @@
    own width (see below) instead of down its length, 12px is exactly four 3px stripes with no
    partial fifth stripe getting cut off at the rail's outer edge. */
 .cx-side-wave-layout { display: grid; grid-template-columns: 12px 1fr 12px; min-height: 100vh; }
+/* overflow-x:hidden removed here too (2026-08-31) -- see the matching removal + full explanation
+   on .coherence-v2 above; same sticky-breaking mechanism, same fix. */
 /* Thirteenth pass -- Tyler: "The wave thing isn't really working. How about instead simple
    stripes of each color. Each 3 pixels wide." Plain bands, three shades of burnt orange plus one
    gold, 3px each.
@@ -691,6 +707,136 @@
    "paper" styling), not an iframe -- see that file for its rules. */
 
 @media (max-width: 700px) {
-  .cx-page { padding-top: 60px; }
+  .cx-page { padding-top: 24px; }
   .cx-contact-icons { flex-wrap: wrap; justify-content: center; gap: 20px 16px; max-width: none; }
+
+  /* Mobile header rebuild (2026-08-31, Tyler: "make my portfolio v2 mobile friendly"). Live-
+     verified on the real deployed site at a 375px viewport before this fix -- two real breaks,
+     both from desktop-only math in the header (CoherenceNav.jsx) that never had a narrow-screen
+     case:
+     1) .cx-view-switch-left and .cx-resume-right are position:absolute, hung off the title/icons
+        clusters' own left/right edges (right:100%/left:100%) so they never disturb the wordmark's
+        centered desktop position. At 375px there's no room off either edge for a 105px-min-width
+        pill -- the v1/v2 switch rendered fully off-canvas to the left and the Resume button off-
+        canvas to the right, both reachable only by scrolling the whole PAGE horizontally (see
+        .cx-side-wave-layout's rails scrolling right past the wordmark in a screenshot).
+     2) .cx-icons-cluster's width is a hardcoded calc((100% - 40px) / 3) tying it to the desktop
+        .cx-home-grid's 2fr/1fr split (see that rule's own comment) -- correct on desktop, but the
+        grid itself collapses to 1fr under 1100px, so past that point the icon column stayed
+        squeezed into an unrelated 1/3-width sliver. Confined that narrow, the 5 compact contact
+        icons (each already a vertical icon+label stack) couldn't wrap into a normal row and
+        instead piled into one tall column -- combined with .cx-topbar's position:sticky, that
+        single column stayed pinned across roughly a third of the viewport for the entire scroll
+        depth of the page (this site's About/Get to Know a Dev sections run long).
+     Fix: below this breakpoint, both absolutely-positioned pills go back to normal document flow
+     (position:static) and the row becomes a centered column stack -- switch, wordmark, icons,
+     Resume -- instead of trying to preserve the desktop's pixel-symmetric hanging-off-both-edges
+     layout at a width it was never built for. The topbar also drops out of position:sticky here:
+     even fully fixed, a multi-row stacked header would still eat real reading space pinned across
+     this page's long-form text sections, so it scrolls away with the page instead on a phone. */
+  .cx-topbar { position: static; }
+  .cx-header-row { flex-direction: column; align-items: center; gap: 12px; }
+  .cx-title-cluster { flex-direction: column; gap: 8px; }
+  /* top/left/right/transform reset explicitly (2026-08-31 fix, live-caught: a hard refresh still
+     showed Resume sitting on top of the icon row instead of below it) -- position:static makes
+     top/left/right inert, but transform is NOT a positioning property, so the base rule's
+     transform:translateY(-50%) (written for vertically centering an absolutely-positioned pill
+     against a taller sibling) kept applying here too, pulling both pills back up by half their own
+     height even in normal flow. Only resetting position/margin, as the first pass did, left this
+     one lingering since it's a separate property the cascade doesn't touch as a side effect. */
+  .cx-view-switch-left { position: static; top: auto; right: auto; transform: none; margin: 0; }
+  .cx-wordmark { font-size: clamp(20px, 7vw, 28px); }
+  .cx-icons-cluster { width: 100%; margin-left: 0; }
+  .cx-resume-right { position: static; top: auto; left: auto; transform: none;
+    margin: 4px 0 0; display: flex; justify-content: center; }
+
+  /* Round 2 (2026-08-31, Tyler, after live-testing round 1 on his own phone-emulated Chrome):
+     three more mobile-only changes. */
+
+  /* 1) No v1/v2 switch on mobile -- Tyler: "I don't think we need the v1/v2 toggle on mobile.
+     Let's only give them access to v2." v2 is already the default on every fresh page load
+     (CoherenceThemeContext.jsx, plain useState, no persistence), so hiding the only control that
+     could ever leave v2 is sufficient -- a mobile visitor now has no path to v1 at all, matching
+     "only give them access to v2" exactly, not just "hide the button but leave a way there." */
+  .cx-view-switch-left { display: none; }
+
+  /* 2) Socials move to the bottom of the page -- Tyler: "All of the socials buttons can go to the
+     bottom of the page on mobile." Hides only the icon row inside the header's icons-cluster
+     (Resume stays put, now alone and still centered via .cx-resume-right above); CoherenceFoot
+     (App.jsx, revived mobile-only via .cx-mobile-foot below) renders the real replacement at the
+     true bottom of the page, below every section, using the exact same CoherenceContactIcons the
+     header used -- same icons, same click-to-reveal behavior, just relocated. */
+  .cx-icons-cluster .cx-contact-icons { display: none; }
+  .cx-mobile-foot { display: block; }
+
+  /* 3) Side-rail stripes, thinner -- Tyler: "there's an issue with the page width. There shouldn't
+     be any side scrolling needed. This is probably from the stripes of color on the page. Let's
+     change the width of them to 1px each on mobile." Each of the 4 bands in .cx-side-wave-rail's
+     repeating-linear-gradient goes from 3px to 1px, and the rail's own grid column narrows to
+     match (12px -> 4px) so the 4 bands still tile exactly once with nothing cut off -- same ratio
+     as the desktop version (coherence-v2.css's own "Rail width... fourteenth pass" comment above),
+     just scaled down for a narrow viewport. */
+  .cx-side-wave-layout { grid-template-columns: 4px 1fr 4px; }
+  .cx-side-wave-rail { background-image: repeating-linear-gradient(to right,
+    color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 0px, color-mix(in srgb, var(--cx-accent2) 55%, black 45%) 1px,
+    var(--cx-accent2) 1px, var(--cx-accent2) 2px,
+    var(--cx-accent) 2px, var(--cx-accent) 3px,
+    color-mix(in srgb, var(--cx-accent2) 55%, white 45%) 3px, color-mix(in srgb, var(--cx-accent2) 55%, white 45%) 4px); }
+
+  /* REVERTED (2026-08-31, same session) -- zeroing min-width here was wrong and caused a real
+     regression, caught in a real iPhone screenshot: min-width:260px (the desktop default, now
+     just left alone again) is exactly what makes hero-skills' flex-wrap trigger and drop it below
+     the photo onto its own row. With min-width:0, flexbox's wrap math saw hero-skills as needing
+     ~0px, so it never wrapped -- it stayed squeezed onto the SAME row as the 170px photo, and the
+     skill chips inside it (which don't shrink below their own text) spilled out past the card,
+     silently clipped by the overflow-x:hidden backstops instead of wrapping. The real fix for the
+     original side-scroll report turned out to be the toggle/icons/rail changes elsewhere in this
+     block, not this. */
+
+  /* Round 3 (2026-08-31, Tyler: "putting the TYLER FRUIK text left aligned and the Resume button
+     in the same line but right aligned. Those two can then be pinned to the top of the page so
+     they persist when scrolling"). Round 1 stacked the header into a centered column and dropped
+     position:sticky specifically because a whole 5-icon column pinned across a third of the
+     screen for the entire scroll was worse than not pinning at all (see that round's own comment
+     above) -- but round 2 already emptied the header down to just the wordmark and Resume (the
+     switch is hidden now, the icons moved to the footer), so what's left is a single slim row and
+     pinning it is a plain win instead of the same problem. Overrides round 1's column stack back
+     to a row, wordmark left/Resume right via justify-content:space-between (matches the desktop
+     header's own left-title/right-actions shape, just without the switch or icons in between),
+     and restores .cx-topbar's base position:sticky (untouched since round 1 only ever set
+     position:static on it -- same z-index/background/border-bottom as desktop, no need to repeat
+     them). Wordmark shrinks a bit further and Resume's pill drops its 105px desktop min-width so
+     both comfortably share one row down to the narrowest common phone widths (~320px). */
+  .cx-topbar { position: sticky; top: 0; }
+  .cx-header-row { flex-direction: row; flex-wrap: nowrap; justify-content: space-between;
+    align-items: center; gap: 10px; }
+  .cx-title-cluster { flex-direction: row; }
+  .cx-wordmark { font-size: clamp(16px, 5.5vw, 22px); }
+  .cx-icons-cluster { width: auto; margin-left: 0; }
+  .cx-resume-right { margin: 0; display: block; }
+  .cx-view-switch.cx-resume-inline { min-width: auto; }
+  .cx-resume-inline .cx-view-btn { padding: 8px 12px; }
+}
+/* Mobile-only footer shell (2026-08-31) -- App.jsx always renders <CoherenceFoot/> now (v2 route),
+   wrapped in this class so it stays invisible above the 700px breakpoint above; CoherenceFoot's
+   own .cx-foot/.cx-contact-icons rules do the rest of the styling, same as when it was the site's
+   real desktop footer before 2026-08-28's twelfth pass retired it. */
+.cx-mobile-foot { display: none; }
+
+/* Hero photo + skills, all mobile widths (2026-08-31, replacing the earlier ≤400px-only two-tier
+   version -- Tyler: "resize the pfp and skills tags to fit in the space better"). The old version
+   only shrank the photo below 400px, hard-jumping from 260px to 170px right at that line -- fine
+   at the two widths it was tested at, but every phone between ~400-700px (this session's own
+   iPhone Air screenshot included) kept the full 260px photo crammed against the skills column,
+   leaving the chips squeezed into a narrow strip that wrapped unevenly (three chips, then two,
+   then two, then one alone) with a lot of plain banner showing below. clamp() scales the photo
+   continuously with viewport width instead of jumping at one line -- 42vw lands close to the old
+   170px around 400px wide and grows smoothly toward the desktop 260px as the viewport widens past
+   this breakpoint, so the photo and the remaining chip column stay in roughly the same proportion
+   to each other at every phone size instead of the chip column suddenly getting a lot tighter or
+   looser right at 400px. Card padding/gap scale down a step too so the shrunk photo doesn't leave
+   the card feeling oversized around it. */
+@media (max-width: 700px) {
+  .cx-hero-card { padding: 16px; gap: 16px; }
+  .cx-hero-pfp { width: clamp(120px, 42vw, 260px); height: clamp(120px, 42vw, 260px); }
 }
