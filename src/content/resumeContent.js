@@ -23,7 +23,7 @@ export const RESUME = {
   ],
   experience: [
     {
-      title: 'AI Rating QA Specialist',
+      title: 'AI Rating QA Specialist / Project Manager',
       org: 'Uber Technologies, Austin, TX',
       dates: 'Aug 2025-Present',
       bullets: [
